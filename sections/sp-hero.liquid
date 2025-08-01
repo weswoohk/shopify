@@ -1,0 +1,340 @@
+{% comment %}
+  © Sections Pro. You are free to use this section in your store. You may not redistribute this section in another Shopify app.
+{% endcomment %}
+<style>
+
+  {{ section.settings.text_font | font_face }}
+  {{ section.settings.headline_font | font_face }}
+
+  #sp-hero-{{ section.id }}.sp-hero-wrap p,
+  #sp-hero-{{ section.id }}.sp-hero-wrap p a {
+    font-size: {{ section.settings.text_size }}px;
+    font-family: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};
+    font-weight: {{ section.settings.text_font.weight }};
+    line-height: 1.15;
+  }
+
+  #sp-hero-{{ section.id }}.sp-hero-wrap h2 {
+    font-size: {{ section.settings.headline_size }}px;
+    font-family: {{ section.settings.headline_font.family }}, {{ section.settings.headline_font.fallback_families }};
+    font-weight: {{ section.settings.headline_font.weight }};
+    line-height: 1.15;
+  }
+
+  #sp-hero-{{ section.id }}.sp-hero-wrap {
+    background-image: {{ section.settings.background_color }};
+    width: 100%;
+  }
+  
+
+  #sp-hero-{{ section.id }} .sp-hero {
+    position: relative;
+    background: url({{ section.settings.hero_image | image_url: width: 2048 }}) no-repeat 0 0;
+    background-size: cover;
+    background-position: center;
+    margin: 0 auto;
+    max-width: {{ section.settings.max_width }}px;
+    padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;
+  }
+
+  #sp-hero-{{ section.id }} .sp-hero>.sp-hero-container {
+    display: grid;
+    align-items: center;
+    justify-content: {{ section.settings.box_alignment }};
+    position: relative;
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 100px 10px 100px 10px;
+    z-index: 2;
+  }
+
+  #sp-hero-{{ section.id }} .sp-hero>.sp-hero-cover {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background-image: {{section.settings.cover_background}};
+    opacity: {{section.settings.cover_opacity}}%;
+  }
+
+  .sp-hero-content {
+    padding: 0 25px 0 25px;
+    max-width: 60%;
+  }
+
+  @media only screen and (max-width: 800px) {
+    .sp-hero-content {
+      padding: 0 10px 0 10px;
+      max-width: calc(100% - 20px);
+    }
+  }
+
+  #sp-hero-{{ section.id }} .sp-hero h2 {
+    font-weight: bold;
+    margin: 0 0 25px 0;
+    padding: 0;
+    color: {{section.settings.text_color}};
+    text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+    text-align: {{section.settings.text_alignment}};
+  }
+
+  #sp-hero-{{ section.id }} .sp-hero p {
+    margin: 0 0 25px 0;
+    padding: 0;
+    color: {{section.settings.text_color}};
+    text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+    text-align: {{section.settings.text_alignment}};
+  }
+
+  .sp-hero p:last-child {
+    margin-bottom: 0;
+  }
+
+  #sp-hero-{{ section.id }} .sp-hero a.sp-hero-cta {
+    display: inline-block;
+    padding: 15px 40px;
+    background-image: {{section.settings.button_background_color}};
+    border-radius: 27.5px;
+    color: {{section.settings.button_text_color}};
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: bold;
+    text-shadow: none;
+    transition: .25s all;
+  }
+
+  .sp-hero a.sp-hero-cta:hover {
+    transform: translateY(-2px);
+  }
+
+  @media only screen and (max-width: 800px) {
+
+  }
+</style>
+
+<div id="sp-hero-{{ section.id }}" class="sp-hero-wrap">
+<div class="sp-hero">
+  <div class="sp-hero-cover"></div>
+  <div class="sp-hero-container">
+  <div class="sp-hero-content">
+    <h2>{{ section.settings.headline }}</h2>
+    <p>{{ section.settings.content }}</p>
+    <p><a class="sp-hero-cta" href="{{ section.settings.cta_link }}">{{ section.settings.cta }}</a></p>
+  </div>
+  </div>
+</div>
+</div>
+
+{% schema %}
+  {
+    "name": "🚀SP - Hero",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Text",
+        "info": "Set the text size for your widget"
+      },
+      {
+        "type": "font_picker",
+        "id": "text_font",
+        "label": "Text Font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "text_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Text Size",
+        "default": 15
+      },
+      {
+        "type": "font_picker",
+        "id": "headline_font",
+        "label": "Headline Font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "headline_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Headline Size",
+        "default": 25
+      },
+      {
+        "type": "header",
+        "content": "Colors",
+        "info": "Set colors for the section."
+      },
+      {
+        "type": "color_background",
+        "id": "background_color",
+        "default": "linear-gradient(164deg, #fff 0%, #fff 0%)",
+        "label": "Background"
+      },
+      {
+        "type": "color_background",
+        "id": "cover_background",
+        "default": "linear-gradient(164deg, #111 0%, #555 100%)",
+        "label": "Cover Background"
+      },
+      {
+        "type": "range",
+        "id": "cover_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "label": "Cover Opacity",
+        "default": 25
+      },
+      {
+        "type": "color_background",
+        "id": "button_background_color",
+        "default": "linear-gradient(164deg, #111 0%, #333 100%)",
+        "label": "Button Background Color"
+      },
+      {
+        "type": "color",
+        "id": "button_text_color",
+        "default": "#ffffff",
+        "label": "Button Text Color"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "default": "#ffffff",
+        "label": "Text Color"
+      },
+      {
+        "type": "header",
+        "content": "Alignment",
+        "info": "Set alignment of the hero text."
+      },
+      {
+          "type": "select",
+          "id": "box_alignment",
+          "default": "left",
+          "label": "Box Alignment",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ]
+      },
+      {
+          "type": "select",
+          "id": "text_alignment",
+          "default": "left",
+          "label": "Text Alignment",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ]
+      },
+      {
+        "type": "header",
+        "content": "Dimensions",
+        "info": "Set the section dimensions in pixels."
+      },
+      {
+        "type": "number",
+        "id": "max_width",
+        "default": 3000,
+        "label": "Max Width of Section"
+      },
+      {
+        "type": "number",
+        "id": "padding_top",
+        "default": 25,
+        "label": "Padding Top"
+      },
+      {
+        "type": "number",
+        "id": "padding_bottom",
+        "default": 25,
+        "label": "Padding Bottom"
+      },
+      {
+        "type": "number",
+        "id": "padding_left",
+        "default": 10,
+        "label": "Padding Left"
+      },
+      {
+        "type": "number",
+        "id": "padding_right",
+        "default": 10,
+        "label": "Padding Right"
+      },
+      {
+        "type": "header",
+        "content": "Content",
+        "info": "Set the section content."
+      },
+      {
+          "type": "text",
+          "id": "headline",
+          "default": "This is our hero tagline",
+          "label": "Headline"
+      },
+      {
+          "type": "text",
+          "id": "content",
+          "default": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec mauris dui, tempor ultrices laoreet ac, aliquet vel magna. Curabitur malesuada lorem vitae sapien bibendum, sed vulputate nibh venenatis. Nam lacinia malesuada sapien, ac luctus ex tincidunt ut. Nullam tempus at tortor non congue. Ut at tristique odio. Nullam lobortis sed velit semper ultrices.",
+          "label": "Content"
+      },
+      {
+        "type": "image_picker",
+        "id": "hero_image",
+        "label": "Hero Image"
+      },
+      {
+          "type": "text",
+          "id": "cta",
+          "default": "Shop Now",
+          "label": "Call to Action"
+      },
+      {
+          "type": "text",
+          "id": "cta_link",
+          "default": "#",
+          "label": "Call to Action Link"
+      }
+    ],
+	"blocks": [],
+	"presets": [
+      {
+        "name": "🚀SP - Hero",
+        "category": "Custom"
+      }
+    ]
+  }
+{% endschema %}

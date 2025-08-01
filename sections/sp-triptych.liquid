@@ -1,0 +1,308 @@
+{% comment %}
+  © Sections Pro. You are free to use this section in your store. You may not redistribute this section in another Shopify app.
+{% endcomment %}
+<style>
+
+  {{ section.settings.text_font | font_face }}
+  {{ section.settings.headline_font | font_face }}
+
+  #sp-triptych-{{ section.id }}.sp-triptych-wrap p,
+  #sp-triptych-{{ section.id }}.sp-triptych-wrap li,
+  #sp-triptych-{{ section.id }}.sp-triptych-wrap li a {
+    font-size: {{ section.settings.text_size }}px;
+    font-family: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};
+    font-weight: {{ section.settings.text_font.weight }};
+    line-height: 1.15;
+    color: {{ section.settings.text_color }};
+  }
+
+  #sp-triptych-{{ section.id }}.sp-triptych-wrap h2 {
+    font-size: {{ section.settings.headline_size }}px;
+    font-family: {{ section.settings.headline_font.family }}, {{ section.settings.headline_font.fallback_families }};
+    font-weight: {{ section.settings.headline_font.weight }};
+    line-height: 1.15;
+    color: {{ section.settings.headline_color }};
+  }
+
+  #sp-triptych-{{ section.id }}.sp-triptych-wrap {
+    background-image: {{ section.settings.background_color }};
+    width: 100%;
+  }
+
+  #sp-triptych-{{ section.id }} .sp-triptych {
+    position: relative;
+    margin: 0 auto;
+    max-width: {{ section.settings.max_width }}px;
+    padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;
+  }
+
+  #sp-triptych-{{ section.id }}  .sp-triptych .sp-triptych-grid {
+    display: grid;
+    align-items: center;
+    gap: {{ section.settings.grid_gap}}px;
+    position: relative;
+    z-index: 2;
+  }
+
+  @media only screen and (min-width: 801px) {
+    .sp-triptych .sp-triptych-grid {
+      display: grid;
+      grid-auto-columns: 1fr 1.25fr;
+      grid-auto-flow: column;
+      
+    }
+  }
+
+  @media only screen and (max-width: 800px) {
+    .sp-triptych .sp-triptych-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      
+    }
+  }
+
+
+  .sp-triptych-content * {
+    margin: 0;
+    padding: 0;
+  }
+
+  .sp-triptych-content h2 {
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+
+  .sp-triptych-grid>div {
+    position: relative;
+  }
+
+  .sp-triptych-images>div {
+    position: relaive;
+    width: 100%;
+    height: 425px;
+    z-index: 0;
+  }
+
+  .sp-triptych-images img {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    object-fit:cover;
+    z-index: 1;
+    transition: .25s all ease;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 0 rgba(0,0,0,0.20);
+  }
+
+  .sp-triptych-images img:hover {
+    z-index: 4;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px 0 rgba(0,0,0,0.30);
+  }
+
+  .sp-triptych-images .sp-triptych-image1{
+    top: 0;
+    left: calc(50% - 125px);
+    z-index: 3;
+    transform: rotate(5deg);
+  }
+
+  .sp-triptych-images .sp-triptych-image2{
+    bottom: 0;
+    right: 0;
+    z-index: 2;
+    transform: rotate(-5deg);
+  }
+
+  .sp-triptych-images .sp-triptych-image3{
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    transform: rotate(5deg);
+  }
+
+  @media only screen and (max-width: 800px) {
+
+  }
+</style>
+
+
+<div id="sp-triptych-{{ section.id }}" class="sp-triptych-wrap">
+
+<div class="sp-triptych">
+
+  <div class="sp-triptych-grid">
+
+    <div class="sp-triptych-content">
+      <h2>{{ section.settings.headline }}</h2>
+      <p>{{ section.settings.content }}</p>
+    </div>
+
+    <div class="sp-triptych-images">
+      <div>&nbsp;</div>
+      <img class="sp-triptych-image1" src="{{ section.settings.image_1 | image_url: width: 500 }}">
+      <img class="sp-triptych-image2" src="{{ section.settings.image_2 | image_url: width: 500 }}">
+      <img class="sp-triptych-image3" src="{{ section.settings.image_3 | image_url: width: 500 }}">
+    </div>
+
+  </div>
+  <!-- /.sp-triptych-grid -->
+  
+</div>
+<!-- /.sp-triptych -->
+
+</div>
+<!-- /.sp-triptych-wrap -->
+
+{% schema %}
+  {
+    "name": "🚀SP - Triptych",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Text",
+        "info": "Set the text size for your widget"
+      },
+      {
+        "type": "font_picker",
+        "id": "text_font",
+        "label": "Text Font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "text_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Text Size",
+        "default": 15
+      },
+      {
+        "type": "font_picker",
+        "id": "headline_font",
+        "label": "Headline Font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "headline_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Headline Size",
+        "default": 40
+      },
+      {
+        "type": "header",
+        "content": "Colors",
+        "info": "Set colors for the section"
+      },
+      {
+        "type": "color_background",
+        "id": "background_color",
+        "default": "linear-gradient(164deg, #fff 0%, #fff 0%)",
+        "label": "Background"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "default": "#111111",
+        "label": "Text Color"
+      },
+      {
+        "type": "color",
+        "id": "headline_color",
+        "default": "#111111",
+        "label": "Headline Color"
+      },
+      {
+        "type": "header",
+        "content": "Dimensions",
+        "info": "Set the section dimensions in pixels."
+      },
+      {
+        "type": "number",
+        "id": "max_width",
+        "default": 1000,
+        "label": "Max Width of Section"
+      },
+      {
+        "type": "number",
+        "id": "grid_gap",
+        "default": 20,
+        "label": "Gap Between Reviews"
+      },
+      {
+        "type": "number",
+        "id": "padding_top",
+        "default": 25,
+        "label": "Padding Top"
+      },
+      {
+        "type": "number",
+        "id": "padding_bottom",
+        "default": 25,
+        "label": "Padding Bottom"
+      },
+      {
+        "type": "number",
+        "id": "padding_left",
+        "default": 10,
+        "label": "Padding Left"
+      },
+      {
+        "type": "number",
+        "id": "padding_right",
+        "default": 10,
+        "label": "Padding Right"
+      },
+      {
+        "type": "header",
+        "content": "Content",
+        "info": "Set content for the section"
+      },
+      {
+        "type": "inline_richtext",
+        "id": "headline",
+        "label": "Headline",
+        "default": "Headline"
+      },
+      {
+        "type": "inline_richtext",
+        "id": "content",
+        "label": "Content"
+      },
+      {
+        "type": "header",
+        "content": "Images",
+        "info": "Select the images."
+      },
+      {
+        "type": "image_picker",
+        "id": "image_1",
+        "label": "Image 1"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_2",
+        "label": "Image 2"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_3",
+        "label": "Image 3"
+      }
+    ],
+	"blocks": [
+    ],
+	"presets": [
+      {
+        "name": "🚀SP - Triptych",
+        "category": "Custom"
+      }
+    ]
+  }
+{% endschema %}

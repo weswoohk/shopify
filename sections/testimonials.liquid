@@ -1,0 +1,401 @@
+{{ 'section-testimonials.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  if section.settings.layout_mode == 'slider'
+    assign slider_id = section.id
+  else 
+    assign slider_id = blank
+  endif
+-%}
+
+{%- render 'section-heading', heading: section.settings.heading, navigation: slider_id, seo_h_tag: section.settings.seo_h_tag, hide_border: section.settings.disable_section_title_border -%}
+
+<div id="element-{{ section.id }}" class="element--overflow-hidden">
+
+  {%- if section.blocks.size > 1 and section.settings.layout_mode == "slider" -%}
+    <css-slider data-options='{
+      "selector": ".testimonial",
+      "groupCells": true,
+      "autoHeight": false,
+      "navigation": false,
+      "thumbnails": false
+    }'
+      class="css-slider" 
+      id="slider-{{ section.id }}"
+    >
+  {%- endif -%}
+
+    <div class="grid {% if section.settings.layout_mode == "slider" %} grid--slider {% else %} grid--layout element--overflow-hidden {% endif %} {{ section.settings.layout }} grid--align-items-stretch testimonials {% if section.settings.disable_border %} element--hide-inner-borders {% endif %}">
+      
+      {%- for block in section.blocks -%}
+
+        {%- assign quote_size = block.settings.quote | strip_html | split: ' ' | size -%}
+        
+        {%- capture meta -%}
+          {%- if block.settings.author_name != blank and block.settings.author_title != blank -%}
+            <div class="testimonial__meta">
+              {%- unless block.settings.author_name == blank -%}
+                <span class="text-weight--bold text-size--16">{{ block.settings.author_name | escape }}</span>
+              {%- endunless -%}
+              {%- unless block.settings.author_title == blank -%}
+                <span class="text-size--16">{{ block.settings.author_title | escape }}</span>
+              {%- endunless -%}
+            </div>
+          {%- endif -%}
+        {%- endcapture -%}
+
+        <div id="element-{{ block.id }}" class="testimonial card js-slider-item" {{ block.shopify_attributes }}>
+
+          {%- unless block.settings.quote == blank -%}
+
+            <div>
+
+              <blockquote class="testimonial__quote remove-empty-space rte">
+                <div class="text-size--{{ section.settings.text_size }} {{ section.settings.text_font }} {{ section.settings.text_line_height }}">
+                  <truncated-html data-limit="{{ section.settings.word_limit }}" data-ending="...">
+                    {{ block.settings.quote }}
+                  </truncated-html>
+                </div>
+              </blockquote>
+
+              {%- if quote_size > section.settings.word_limit -%}
+
+                <button class="button button--small button--outline--hover-accent" onclick="document.getElementById('{{ block.id }}').show()" style="margin-top:var(--gutter-small)">
+                  <span class="button__text">{{ 'general.accessibility_labels.read_more' | t }}</span>
+                </button>
+                
+                <modal-box id="{{ block.id }}" class="modal modal-testimonials"
+                    data-options='{
+                      "enabled": false,
+                      "showOnce": false,
+                      "appendToBody": true
+                    }'
+                    style="display:none"
+                    tabindex="-1" role="dialog" aria-modal="true" 
+                  >
+                  <div class="modal-content spacing--xlarge remove-empty-space">
+                    <blockquote class="testimonial__quote rte">
+                      <div class="text-size--{{ section.settings.text_size }} {{ section.settings.text_font }} {{ section.settings.text_line_height }}">
+                        {{ block.settings.quote }}
+                      </div>
+                    </blockquote>
+
+                    {{ meta }}
+
+                    <button data-js-close class="modal-close">
+                      <span class="visually-hidden">{{ 'general.accessibility_labels.close' | t }}</span>
+                      <span aria-hidden="true" class="exit">{%- render 'theme-symbols', icon: 'close' -%}</span>
+                    </button>
+                  </div>
+                  
+                  <span class="modal-background" data-js-close></span>
+
+                </modal-box>
+
+              {%- endif -%}
+
+            </div>
+
+            {{ meta }}
+
+          {%- endunless -%}
+          
+        </div>
+
+      {%- endfor %}
+
+    </div>
+
+  {%- if section.blocks.size > 1 and section.settings.layout_mode == "slider" -%}</css-slider>{%- endif -%}
+
+</div>
+
+{%- if section.settings.mobile_text_size != "1" -%}
+  <style type="text/css">
+    @media screen and (max-width: 767px) {
+      #shopify-section-{{ section.id }} .testimonial__quote {
+        --font-mobile-corrector: {{ section.settings.mobile_text_size }};
+      }
+    }
+  </style>
+{%- endif -%}
+
+{%- render 'section-footer', cta_label: section.settings.cta_label, cta_url: section.settings.cta_url, nav: slider_id, nav_desktop: false, nav_mobile: true -%}
+
+{%- render 'color-scheme', color_scheme: section.settings.color_scheme, hide_section_bottom_border: section.settings.disable_section_bottom_border -%}
+
+<script src="{{ 'component-truncated-html.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "t:sections.testimonials.name",
+  "class": "mount-css-slider element--has-section-borders mount-testimonials",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.layout_labels.section_heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "t:sections.local-extra-words.sections.headings.heading",
+      "default": "Testimonials"
+    },
+    {
+      "type": "select",
+      "id": "seo_h_tag",
+      "label": "t:sections.refactor_words.seo.label",
+      "info": "t:sections.refactor_words.seo.info",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "span",
+          "label": "span"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_section_title_border",
+      "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_title_border",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.layout_labels.layout"
+    }, 
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.local-extra-words.sections.columns.name",
+      "label": "t:sections.local-extra-words.sections.columns.info",
+      "options": [
+        {
+          "value": "grid-1 grid-lap-1",
+          "label": "t:sections.local-extra-words.sections.columns.option__0"
+        },
+        {
+          "value": "grid-2 grid-lap-1",
+          "label": "t:sections.local-extra-words.sections.columns.option__1"
+        },
+        {
+          "value": "grid-3 grid-portable-2 grid-palm-1",
+          "label": "t:sections.local-extra-words.sections.columns.option__2"
+        }
+      ],
+      "default": "grid-2 grid-lap-1"
+    },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "t:sections.featured-collection.settings.layout.label",
+      "options": [
+        {
+          "label": "t:sections.featured-collection.settings.layout.options__1.label",
+          "value": "slider"
+        },
+        {
+          "label": "t:sections.featured-collection.settings.layout.options__2.label",
+          "value": "grid"
+        }
+      ],
+      "default": "slider"
+    },
+    {
+      "type": "header",
+      "content": "t:settings_schema.typography.name"
+    },
+    {
+      "type": "range",
+      "id": "word_limit",
+      "label": "t:raw-extra-words.settings_schema.labels.truncate_testimonial_words",
+      "min": 5,
+      "max": 100,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "text_font",
+      "label": "t:raw-extra-words.new_schema.text_font",
+      "options": [
+        {
+          "value": "text-font--body",
+          "label": "t:sections.split-extra-words.settings_schema.typography.headings.body"
+        },
+        {
+          "value": "text-font--headings",
+          "label": "t:sections.split-extra-words.settings_schema.typography.headings.headings"
+        }
+      ],
+      "default": "text-font--body"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "t:raw-extra-words.settings_schema.labels.text_size",
+      "options": [
+        {
+          "label": "t:raw-extra-words.settings_schema.options.small",
+          "value": "24"
+        },
+        {
+          "label": "t:raw-extra-words.settings_schema.options.regular",
+          "value": "30"
+        },
+        {
+          "label": "t:raw-extra-words.settings_schema.options.large",
+          "value": "40"
+        },
+        {
+          "label": "t:raw-extra-words.settings_schema.options.extra_large",
+          "value": "60"
+        }
+      ],
+      "default": "40"
+    },
+    {
+      "type": "select",
+      "id": "mobile_text_size",
+      "label": "t:1-2-0.mobile_text_size.label",
+      "options": [
+        {
+          "value": "1",
+          "label": "t:raw-extra-words.settings_schema.options.default"
+        },
+        {
+          "value": "var(--mobile-text-size-small)",
+          "label": "t:raw-extra-words.settings_schema.options.small"
+        },
+        {
+          "value": "var(--mobile-text-size-medium)",
+          "label": "t:raw-extra-words.settings_schema.options.medium"
+        },
+        {
+          "value": "var(--mobile-text-size-large)",
+          "label": "t:raw-extra-words.settings_schema.options.large"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "text_line_height",
+      "label": "t:sections.split-extra-words.settings_schema.typography.settings.line_height",
+      "options": [
+        {
+          "value": "text-line-height--default",
+          "label": "t:raw-extra-words.settings_schema.options.default"
+        },
+        {
+          "value": "text-line-height--custom-small",
+          "label": "t:raw-extra-words.settings_schema.options.small"
+        },
+        {
+          "value": "text-line-height--custom-medium",
+          "label": "t:raw-extra-words.settings_schema.options.medium"
+        },
+        {
+          "value": "text-line-height--custom-large",
+          "label": "t:raw-extra-words.settings_schema.options.large"
+        }
+      ],
+      "default": "text-line-height--default"
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.labels.section_footer"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "t:raw-extra-words.settings_schema.labels.button_text"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "t:raw-extra-words.settings_schema.labels.button_url"
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.colors.header_section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:color-schemes.name_singular",
+      "default": "scheme_1"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_section_bottom_border",
+      "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.colors.header_inner"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_border",
+      "label": "t:raw-extra-words.settings_schema.borders.remove.hide_borders",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "t:sections.testimonials.blocks.testimonial.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "t:sections.testimonials.blocks.testimonial.settings.author_name.label",
+          "default": "Author"
+        },
+        {
+          "type": "text",
+          "id": "author_title",
+          "label": "t:sections.testimonials.blocks.testimonial.settings.author_title.label",
+          "default": "Customer"
+        },
+        {
+          "type": "richtext",
+          "id": "quote",
+          "label": "t:sections.testimonials.blocks.testimonial.settings.quote.label",
+          "default": "<p>Add customer reviews and testimonials to showcase your store's happy customers.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.local-extra-words.sections.testimonials.name",
+      "blocks": [
+        { "type": "testimonial" },
+        { "type": "testimonial" }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "custom.drawers", "custom.overlay"]
+  }
+}
+{% endschema %}

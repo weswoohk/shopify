@@ -1,0 +1,184 @@
+{%- render 'section-heading', heading: section.settings.heading, navigation: false, seo_h_tag: section.settings.seo_h_tag, hide_border: section.settings.disable_section_title_border -%}
+
+{%- unless section.settings.video == blank -%}
+
+  {{ 'component-video.css' | asset_url | stylesheet_tag }}
+
+  <div class="card element--overflow-hidden
+    {% if section.settings.remove_padding %} card--no-padding {% endif %}
+    {% if section.settings.remove_border_radius or section.settings.remove_padding %} card--no-radius {% endif %}"
+  >
+
+    <video-popup id="video-popup-{{ section.id }}" class="video-popup video-popup--section" style="display:block"
+      data-video data-product-media-type="{{ section.settings.video.type }}"
+    >
+
+      {%- liquid 
+        if section.index == 1 and section.location == 'template'
+          assign preload = true
+        else
+          assign preload = false
+        endif
+      -%}
+
+      <template>
+        {%- if section.settings.video.type == 'youtube' -%}
+          <iframe src="https://www.youtube.com/embed/{{ section.settings.video.id }}?enablejsapi=1&autoplay=1" class="js-youtube video-popup__iframe" allow="autoplay; encrypted-media" allowfullscreen title="{{ section.settings.title | escape }}"></iframe>
+        {%- else -%}
+          <iframe src="https://player.vimeo.com/video/{{ section.settings.video.id }}?autoplay=1" class="js-vimeo video-popup__iframe" allow="autoplay; encrypted-media" allowfullscreen title="{{ section.settings.title | escape }}"></iframe>
+        {%- endif -%}
+      </template>
+
+      <div class="video-popup__container card__image"  style="padding-top:56.25%" data-js-video-popup-container id="element-{{ block.id }}">
+
+        <a class="video-popup__link" href="{{ section.settings.video }}" data-js-video-popup-link data-no-instant>
+
+          {%- if section.settings.video != blank or section.settings.video_title != blank -%}
+
+            <div class="video-popup__overlay-content remove-empty-space">
+              {%- unless section.settings.video == blank -%}
+                <span class="video-popup__play" aria-hidden="true">
+                  {%- render 'theme-symbols', icon: 'play' -%}
+                </span>
+              {%- endunless -%}
+            </div>
+          {%- endif -%}
+
+          {%- unless section.settings.image == blank -%}
+            <span class="video-popup__background " aria-hidden="true">
+              {%- liquid
+                assign sizes = 'sizes="100vw"'
+                render 'lazy-image', image: section.settings.image, type: 'background', alt: section.settings.title, preload: preload, sizes: sizes, image_alignment: true
+              -%}
+            </span>
+          {%- else -%}
+            <span class="video-popup__background onboarding-svg onboarding-background">
+              {{ 'hero-apparel-1' | placeholder_svg_tag }}
+            </span>
+          {%- endunless -%}
+
+        </a>
+
+      </div>
+
+      <button class="video-popup__close" data-js-video-popup-close>
+        <span class="visually-hidden">{{ 'general.accessibility_labels.close' | t }}</span>
+        <span aria-hidden="true" class="exit">{%- render 'theme-symbols', icon: 'close' -%}</span>
+      </button>
+
+    </video-popup>
+
+    <script src="{{ 'component-video.js' | asset_url }}" defer></script>
+
+  </div>
+{%- endunless -%}
+
+{%- render 'color-scheme', color_scheme: section.settings.color_scheme, hide_section_bottom_border: section.settings.disable_section_bottom_border -%}
+
+{% schema %}
+  {
+    "name": "t:sections.local-extra-words.sections.video.name",
+    "class": "element--has-section-borders mount-video-popup",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.layout_labels.section_heading.label"
+      },
+      {
+        "type": "textarea",
+        "id": "heading",
+        "label": "t:sections.local-extra-words.sections.headings.heading",
+        "default": "Video"
+      },
+      {
+        "type": "select",
+        "id": "seo_h_tag",
+        "label": "t:sections.refactor_words.seo.label",
+        "info": "t:sections.refactor_words.seo.info",
+        "options": [
+          {
+            "value": "h1",
+            "label": "H1"
+          },
+          {
+            "value": "h2",
+            "label": "H2"
+          },
+          {
+            "value": "h3",
+            "label": "H3"
+          },
+          {
+            "value": "h4",
+            "label": "H4"
+          },
+          {
+            "value": "span",
+            "label": "span"
+          }
+        ],
+        "default": "h2"
+      },
+      {
+        "type": "checkbox",
+        "id": "disable_section_title_border",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_title_border",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.labels.content"
+      },
+      {
+        "id": "video",
+        "type": "video_url",
+        "label": "t:sections.local-extra-words.sections.video.settings.video.label",
+        "accept": ["youtube", "vimeo"],
+        "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "t:sections.local-extra-words.sections.video.settings.image.label"
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.colors.header_section"
+      },
+      {
+        "type": "color_scheme",
+        "id": "color_scheme",
+        "label": "t:color-schemes.name_singular",
+        "default": "scheme_1"
+      },
+      {
+        "type": "checkbox",
+        "id": "disable_section_bottom_border",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.colors.header_inner"
+      },
+      {
+        "type": "checkbox",
+        "id": "remove_border_radius",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.radius",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "remove_padding",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.padding_and_border",
+        "default": false
+      }
+    ],
+    "presets": [{
+      "name": "t:sections.local-extra-words.sections.video.name"
+    }],
+    "disabled_on": {
+      "groups": ["header", "custom.drawers", "custom.overlay"]
+    }
+  }
+{% endschema %}

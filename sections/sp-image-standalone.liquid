@@ -1,0 +1,172 @@
+{% comment %}
+  © Sections Pro. You are free to use this section in your store. You may not redistribute this section in another Shopify app.
+{% endcomment %}
+<style>
+  
+  #sp-sa-image-{{ section.id }}.sp-sa-image-wrap {
+    background-image: {{ section.settings.background_color }};
+    width: 100%;
+  }
+  
+
+  #sp-sa-image-{{ section.id }} .sp-sa-image {
+    position: relative;
+    margin: 0 auto;
+    max-width: 100%;
+    padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;
+  }
+
+  #sp-sa-image-{{ section.id }} .sp-sa-image-container {
+    display: grid;
+    align-items: center;
+    position: relative;
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0;
+    z-index: 4;
+  }
+
+  #sp-sa-image-{{ section.id }} .sp-sa-image-container img {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    object-fit: cover;
+    aspect-ratio: {{ section.settings.media_aspect_ratio }};
+    border-radius: {{ section.settings.media_radius }}px;
+    {% if section.settings.media_shadow %}box-shadow: 0 0 5px 0 rgba(0,0,0,0.20);{% endif %}  }
+
+  @media only screen and (max-width: 800px) {
+
+  }
+</style>
+
+<div id="sp-sa-image-{{ section.id }}" class="sp-sa-image-wrap">
+  <div class="sp-sa-image">
+      
+    <div class="sp-sa-image-container">
+      <img
+        src="{{ section.settings.image | image_url: width: 600 }}"
+        srcset="{{ section.settings.image| image_url: width: 600 }} 600w,
+          {{ section.settings.image | image_url: width: 800 }} 800w,
+          {{ section.settings.image | image_url: width: 1000 }} 1000w,
+          {{ section.settings.image | image_url: width: 1100 }} 1100w">
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "🚀SP - Image Standalone",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Colors",
+        "info": "Set colors for the section."
+      },
+      {
+        "type": "color_background",
+        "id": "background_color",
+        "default": "linear-gradient(164deg, #fff 0%, #fff 0%)",
+        "label": "Background"
+      },
+      {
+        "type": "header",
+        "content": "Dimensions",
+        "info": "Set the section dimensions in pixels."
+      },
+      {
+        "type": "number",
+        "id": "max_width",
+        "default": 1000,
+        "label": "Max Width of Section"
+      },
+      {
+        "type": "number",
+        "id": "padding_top",
+        "default": 25,
+        "label": "Padding Top"
+      },
+      {
+        "type": "number",
+        "id": "padding_bottom",
+        "default": 25,
+        "label": "Padding Bottom"
+      },
+      {
+        "type": "number",
+        "id": "padding_left",
+        "default": 10,
+        "label": "Padding Left"
+      },
+      {
+        "type": "number",
+        "id": "padding_right",
+        "default": 10,
+        "label": "Padding Right"
+      },
+      {
+        "type": "header",
+        "content": "Image",
+        "info": "Setup the image"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      },
+      {
+        "type": "select",
+        "id": "media_aspect_ratio",
+        "default": "4 / 3",
+        "label": "Media Aspect Ratio",
+        "options": [
+          {
+            "value": "21 / 9",
+            "label": "21:9"
+          },
+          {
+            "value": "16 / 9",
+            "label": "16:9"
+          },
+          {
+            "value": "4 / 3",
+            "label": "4:3"
+          },
+          {
+            "value": "1 / 1",
+            "label": "1:1"
+          },
+          {
+            "value": "auto",
+            "label": "auto"
+          }
+        ],
+        "default": "4 / 3"
+      },
+      {
+        "type": "range",
+        "id": "media_radius",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Round Borders on Media",
+        "default": 5
+      },
+      {
+        "type": "checkbox",
+        "id": "media_shadow",
+        "default": true,
+        "label": "Subtle Shadow on Media"
+      }
+    ],
+	"blocks": [],
+	"presets": [
+      {
+        "name": "🚀SP - Image Standalone"
+      }
+    ]
+  }
+{% endschema %}

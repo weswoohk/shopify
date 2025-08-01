@@ -1,0 +1,235 @@
+{% comment %}
+  © Sections Pro. You are free to use this section in your store. You may not redistribute this section in another Shopify app.
+{% endcomment %}
+<style>
+
+  {{ section.settings.text_font | font_face }}
+  {{ section.settings.headline_font | font_face }}
+
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap p,
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap p a {
+    font-size: {{ section.settings.text_size }}px;
+    font-family: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};
+    font-weight: {{ section.settings.text_font.weight }};
+    line-height: 1.15;
+  }
+
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap p {
+    padding: 0;
+    margin: 0 0 {{ section.settings.element_spacing }}px 0;
+  }
+
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap p:last-child {
+    padding: 0;
+    margin: 0;
+  }
+
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap h1,
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap h2,
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap h3,
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap h4 {
+    font-size: {{ section.settings.headline_size }}px;
+    font-family: {{ section.settings.headline_font.family }}, {{ section.settings.headline_font.fallback_families }};
+    font-weight: {{ section.settings.headline_font.weight }};
+    line-height: 1.15;
+    padding: 0;
+    margin: 0 0 {{ section.settings.element_spacing }}px 0;
+  }
+
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap h2 {
+    font-size: {{ section.settings.headline_size | minus: 5 }}px;
+  }
+
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap h3 {
+    font-size: {{ section.settings.headline_size | minus: 10 }}px;
+  }
+
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap h4 {
+    font-size: {{ section.settings.headline_size | minus: 15 }}px;
+  }
+
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap h5 {
+    font-size: {{ section.settings.headline_size | minus: 20 }}px;
+  }
+
+  #sp-richtext-grid-{{ section.id }}.sp-richtext-grid-wrap {
+    background-image: {{ section.settings.background_color }};
+    width: 100%;
+  }
+
+
+  #sp-richtext-grid-{{ section.id }} .sp-richtext-grid {
+    position: relative;
+    margin: 0 auto;
+    max-width: {{ section.settings.max_width }}px;
+    padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;
+  }
+
+  #sp-richtext-grid-{{ section.id }}  .sp-richtext-grid .sp-richtext-grid-grid {
+    display: grid;
+    gap: {{ section.settings.grid_gap}}px;
+    position: relative;
+    z-index: 2;
+  }
+
+  @media only screen and (min-width: 801px) {
+    #sp-richtext-grid-{{ section.id }} .sp-richtext-grid .sp-richtext-grid-grid {
+      display: grid;
+      grid-auto-columns: 1fr;
+      grid-auto-flow: column;
+    }
+  }
+
+  @media only screen and (max-width: 800px) {
+    #sp-richtext-grid-{{ section.id }} .sp-richtext-grid .sp-richtext-grid-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+  }
+  
+</style>
+
+<div id="sp-richtext-grid-{{ section.id }}" class="sp-richtext-grid-wrap">
+
+<div class="sp-richtext-grid">
+
+  <div class="sp-richtext-grid-grid">
+
+    {% for block in section.blocks %}
+      <div class="sp-richtext-grid-col">
+        {{ block.settings.text }}
+      </div>
+      <!-- /.sp-richtext-grid-col -->
+
+    {% endfor %}
+
+  </div>
+  <!-- /.sp-richtext-grid-grid -->
+  
+</div>
+<!-- /.sp-richtext-grid -->
+
+</div>
+<!-- /.sp-richtext-grid-wrap -->
+
+{% schema %}
+  {
+    "name": "🚀SP - Rich Text Grid",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Text",
+        "info": "Set the text size for your widget"
+      },
+      {
+        "type": "font_picker",
+        "id": "text_font",
+        "label": "Text Font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "text_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Text Size",
+        "default": 15
+      },
+      {
+        "type": "font_picker",
+        "id": "headline_font",
+        "label": "Headline Font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "headline_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Headline Size",
+        "default": 25
+      },
+      {
+        "type": "header",
+        "content": "Colors",
+        "info": "Set colors for the section."
+      },
+      {
+        "type": "color_background",
+        "id": "background_color",
+        "default": "linear-gradient(164deg, #fff 0%, #fff 0%)",
+        "label": "Background"
+      },
+      {
+        "type": "header",
+        "content": "Dimensions",
+        "info": "Set the section dimensions in pixels."
+      },
+      {
+        "type": "number",
+        "id": "max_width",
+        "default": 1000,
+        "label": "Max Width of Section"
+      },
+      {
+        "type": "number",
+        "id": "grid_gap",
+        "default": 25,
+        "label": "Gap Between Columns"
+      },
+      {
+        "type": "number",
+        "id": "padding_top",
+        "default": 25,
+        "label": "Padding Top"
+      },
+      {
+        "type": "number",
+        "id": "padding_bottom",
+        "default": 25,
+        "label": "Padding Bottom"
+      },
+      {
+        "type": "number",
+        "id": "padding_left",
+        "default": 10,
+        "label": "Padding Left"
+      },
+      {
+        "type": "number",
+        "id": "padding_right",
+        "default": 10,
+        "label": "Padding Right"
+      },
+      {
+        "type": "number",
+        "id": "element_spacing",
+        "default": 15,
+        "label": "Element Spacing"
+      }
+    ],
+	"blocks": [
+      {
+       "name": "Text",
+       "type": "text",
+       "settings": [
+          {
+            "type": "richtext",
+            "id": "text",
+            "label": "Rich Text"
+          }
+       ]
+      }
+    ],
+	"presets": [
+      {
+        "name": "🚀SP - Rich Text Grid",
+        "category": "Custom"
+      }
+    ]
+  }
+{% endschema %}

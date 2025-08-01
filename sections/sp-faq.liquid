@@ -1,0 +1,267 @@
+{% comment %}
+  © Sections Pro. You are free to use this section in your store. You may not redistribute this section in another Shopify app.
+{% endcomment %}
+<style>
+
+  {{ section.settings.text_font | font_face }}
+  {{ section.settings.headline_font | font_face }}
+
+  @keyframes animateFAQ {
+    from {opacity: 0; }
+    to {opacity: 1; }
+  }
+
+  #sp-faq-{{ section.id }}.sp-faq-wrap p {
+    font-size: {{ section.settings.text_size }}px;
+    font-family: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};
+    font-weight: {{ section.settings.text_font.weight }};
+    line-height: 1.15;
+  }
+
+  #sp-faq-{{ section.id }}.sp-faq-wrap h3 {
+    font-size: {{ section.settings.headline_size }}px;
+    font-family: {{ section.settings.headline_font.family }}, {{ section.settings.headline_font.fallback_families }};
+    font-weight: {{ section.settings.headline_font.weight }};
+    line-height: 1.15;
+  }
+
+  #sp-faq-{{ section.id }}.sp-faq-wrap {
+    background-image: {{ section.settings.background_color }};
+    width: 100%;
+  }
+  
+  #sp-faq-{{ section.id }} .sp-faq {
+    position: relative;
+    margin: 0 auto;
+    max-width: {{ section.settings.max_width }}px;
+    padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;
+  }
+  
+  .sp-faq .sp-faq-grid {
+    position: relative;
+    margin: 0 auto;
+    display: block;
+    max-width: 1000px;
+  }
+
+  .sp-faq-group {
+    position: relative;
+    margin: 0;
+    padding: 0 0 15px 0;
+    cursor: pointer;
+  }
+
+  .sp-faq-group * {
+    pointer-events: none;
+  }
+
+  #sp-faq-{{ section.id }} .sp-faq-group h3 {
+    color: {{ section.settings.question_color }};
+    margin: 0;
+    padding: 0 10px 10px 10px;
+  }
+
+  #sp-faq-{{ section.id }} .sp-faq-group p {
+    color: {{ section.settings.answer_color }};
+    display: none;
+    margin: 0;
+    padding: 0 10px 15px 10px;
+  }
+
+  #sp-faq-{{ section.id }} .sp-faq-group[active] p {
+    display: block;
+    animation: animateFAQ 250ms ease-in-out both;
+  }
+
+  .sp-faq-group::before {
+    content: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path fill="%23888888" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>');
+    display:block;
+    position: absolute;
+    top: 5px;
+    right: 0;
+  }
+  
+  .sp-faq-group[active]::before {
+    content: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path fill="%23888888" d="M19 13H5v-2h14v2z"/></svg>');
+    display: block;
+    position: absolute;
+    top: 5px;
+    right: 0;
+  }
+
+  @media only screen and (max-width: 800px) {
+
+  }
+</style>
+
+<div id="sp-faq-{{ section.id }}" class="sp-faq-wrap">
+
+  <div class="sp-faq">
+
+    <div class="sp-faq-grid">
+      <div class="sp-faq-col">
+
+        {% for block in section.blocks %}
+        <div class="sp-faq-group">
+            <h3>{{block.settings.question}}</h3>
+            <p>{{block.settings.answer}}</p>
+        </div>
+        {% endfor %}
+      
+      </div>
+      <!-- /.sp-faq-col -->
+    </div>
+    <!-- /.sp-faq-container -->
+
+  </div>
+  <!-- /.sp-faq -->
+  
+</div>
+<!-- /.sp-faq-wrap -->
+
+<script>
+  var fs_container = document.querySelector(`#sp-faq-{{ section.id }}`);
+
+  var fs_els = fs_container.querySelectorAll(`.sp-faq-group`);
+
+  if(fs_els.length>0) {
+    fs_els[0].setAttribute('active', '');
+  }
+
+  for(var x=0; x<fs_els.length; x++) {
+    fs_els[x].addEventListener('click', (e)=> {
+      if(e.target.hasAttribute('active')) { e.target.removeAttribute('active'); }
+      else { e.target.setAttribute('active', ''); }
+    });
+  }
+</script>
+
+{% schema %}
+  {
+    "name": "🚀SP - FAQ",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Text",
+        "info": "Set the text size for your widget"
+      },
+      {
+        "type": "font_picker",
+        "id": "text_font",
+        "label": "Text Font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "text_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Text Size",
+        "default": 15
+      },
+      {
+        "type": "font_picker",
+        "id": "headline_font",
+        "label": "Headline Font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "headline_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Headline Size",
+        "default": 25
+      },
+      {
+        "type": "header",
+        "content": "Colors",
+        "info": "Set colors for the section."
+      },
+      {
+        "type": "color_background",
+        "id": "background_color",
+        "default": "linear-gradient(164deg, #FFF 0%, #FFF 100%)",
+        "label": "Background Color"
+      },
+      {
+        "type": "color",
+        "id": "question_color",
+        "default": "#111111",
+        "label": "Question Color"
+      },
+      {
+        "type": "color",
+        "id": "answer_color",
+        "default": "#555555",
+        "label": "Answer Color"
+      },
+      {
+        "type": "header",
+        "content": "Dimensions",
+        "info": "Set the section dimensions in pixels."
+      },
+      {
+        "type": "number",
+        "id": "max_width",
+        "default": 1000,
+        "label": "Max Width of Section"
+      },
+      {
+        "type": "number",
+        "id": "padding_top",
+        "default": 25,
+        "label": "Padding Top"
+      },
+      {
+        "type": "number",
+        "id": "padding_bottom",
+        "default": 25,
+        "label": "Padding Bottom"
+      },
+      {
+        "type": "number",
+        "id": "padding_left",
+        "default": 10,
+        "label": "Padding Left"
+      },
+      {
+        "type": "number",
+        "id": "padding_right",
+        "default": 10,
+        "label": "Padding Right"
+      }
+      
+    ],
+    "blocks": [
+      {
+       "name": "Question",
+       "type": "paragraph",
+       "settings": [
+          {
+          "type": "inline_richtext",
+          "id": "question",
+          "label": "Question",
+          "default": "How does the FAQ section work?"
+          },
+          {
+          "type": "inline_richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "Its simple really. You just add the questions as blocks and then you edit the question and answer."
+          }
+       ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "🚀SP - FAQ",
+        "category": "Custom"
+      }
+    ]
+  }
+{% endschema %}

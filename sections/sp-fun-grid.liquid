@@ -1,0 +1,365 @@
+{% comment %}
+  © Sections Pro. You are free to use this section in your store. You may not redistribute this section in another Shopify app.
+{% endcomment %}
+<style>
+
+  {{ section.settings.text_font | font_face }}
+  {{ section.settings.headline_font | font_face }}
+
+  #sp-fun-{{ section.id }}.sp-fun-wrap p,
+  #sp-fun-{{ section.id }}.sp-fun-wrap p a {
+      font-size: {{ section.settings.text_size }}px;
+      font-family: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};
+      font-weight: {{ section.settings.text_font.weight }};
+      line-height: 1.15;
+    }
+
+    #sp-fun-{{ section.id }}.sp-fun-wrap h2 {
+      font-size: {{ section.settings.headline_size }}px;
+      font-family: {{ section.settings.headline_font.family }}, {{ section.settings.headline_font.fallback_families }};
+      font-weight: {{ section.settings.headline_font.weight }};
+      line-height: 1.15;
+    }
+
+  #sp-fun-{{ section.id }}.sp-fun-wrap {
+    background-image: {{ section.settings.background_color }};
+    width: 100%;
+  }
+
+
+  #sp-fun-{{ section.id }} .sections-ai-feature {
+    position: relative;
+    margin: 0 auto;
+    max-width: {{ section.settings.max_width }}px;
+    padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;
+  }
+
+  #sp-fun-{{ section.id }}  .sections-ai-feature .sp-fun-grid {
+    display: grid;
+    align-items: center;
+    gap: {{ section.settings.grid_gap}}px;
+    position: relative;
+    z-index: 2;
+  }
+
+  @media only screen and (min-width: 801px) {
+    .sections-ai-feature .sp-fun-grid {
+      display: grid;
+      grid-auto-columns: 1fr;
+      grid-auto-flow: column;
+      
+    }
+  }
+
+  @media only screen and (max-width: 800px) {
+    .sections-ai-feature .sp-fun-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      
+    }
+  }
+
+  #sp-fun-{{ section.id }}  .sections-ai-feature .sp-fun-cover {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    background-image: {{section.settings.cover_background}};
+    opacity: {{section.settings.cover_opacity}}%;
+    transition: all .5s;
+    visibility: hidden;
+  }
+
+  #sp-fun-{{ section.id }}  .sp-fun-col:hover .sp-fun-cover {
+    opacity: {{section.settings.cover_opacity | plus: 15 }}%;
+    visibility: visible;
+  }
+
+  .sp-fun-col {
+    position: relative;
+    min-height: 250px;
+    aspect-ratio: 1 /1;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 5px;
+    transition: .25s all ease;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 0 rgba(0,0,0,0.20);
+  }
+
+  .sp-fun-col:nth-child(odd) {
+    transform: rotate(5deg);
+    z-index: 2;
+  }
+
+  .sp-fun-col:nth-child(even) {
+    transform: rotate(-5deg);
+    z-index: 1;
+  }
+
+  .sp-fun-img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    transition: all .5s;
+  }
+
+  .sp-fun-col:hover {
+    z-index: 3;
+    transform: rotate(0);
+  }
+
+  .sp-fun-col:hover .sp-fun-img {
+    transform: scale(1.2);
+  }
+  
+  .sp-fun-content {
+    z-index: 3;
+    padding: 15px;
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    visibility: hidden;
+    opacity: 0;
+    transition: all .5s;
+  }
+
+  .sp-fun-col:hover .sp-fun-content {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  #sp-fun-{{ section.id }} .sections-ai-feature h2 {
+    margin: 0 0 5px 0;
+    padding: 0;
+    color: {{section.settings.text_color}};
+    text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+    text-align: left;
+  }
+
+
+  .sections-ai-feature p {
+    margin: 0;
+    padding: 0;
+    text-align: left;
+  }
+
+  #sp-fun-{{ section.id }} .sections-ai-feature a.sp-fun-cta {
+    display: inline-block;
+    padding: 5px 10px;
+    background-image: {{section.settings.button_background_color}};
+    border-radius: 2px;
+    color: {{section.settings.button_text_color}};
+    text-decoration: none;
+    cursor: pointer;
+    text-shadow: none;
+    transition: .25s all;
+  }
+
+  @media only screen and (max-width: 800px) {
+
+  }
+</style>
+
+<div id="sp-fun-{{ section.id }}" class="sp-fun-wrap">
+
+<div class="sections-ai-feature">
+
+  <div class="sp-fun-grid">
+
+    {% for block in section.blocks %}
+      <div class="sp-fun-col">
+        <img class="sp-fun-img" src="{{ block.settings.background_image | image_url: width: 2048 }}">
+        <div class="sp-fun-cover"></div>
+        <div class="sp-fun-content">
+          <h2>{{ block.settings.headline }}</h2>
+          <p><a class="sp-fun-cta" href="{{ block.settings.cta_link }}">{{ block.settings.cta }}</a></p>
+        </div>
+      </div>
+      <!-- /.sp-fun-col -->
+
+      {% endfor %}
+
+  </div>
+  <!-- /.sp-fun-grid -->
+  
+</div>
+<!-- /.sections-ai-feature -->
+
+</div>
+<!-- /.sp-fun-wrap -->
+
+{% schema %}
+  {
+    "name": "🚀SP - Fun Grid",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Text",
+        "info": "Set the text size for your widget"
+      },
+      {
+        "type": "font_picker",
+        "id": "text_font",
+        "label": "Text Font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "text_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Text Size",
+        "default": 15
+      },
+      {
+        "type": "font_picker",
+        "id": "headline_font",
+        "label": "Headline Font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "headline_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Headline Size",
+        "default": 25
+      },
+      {
+        "type": "header",
+        "content": "Colors",
+        "info": "Set colors for the section."
+      },
+      {
+        "type": "color_background",
+        "id": "background_color",
+        "default": "linear-gradient(164deg, #fff 0%, #fff 0%)",
+        "label": "Background"
+      },
+      {
+        "type": "color_background",
+        "id": "cover_background",
+        "default": "linear-gradient(164deg, #111 0%, #555 100%)",
+        "label": "Cover Background"
+      },
+      {
+        "type": "range",
+        "id": "cover_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "label": "Cover Opacity",
+        "default": 25
+      },
+      {
+        "type": "color_background",
+        "id": "button_background_color",
+        "default": "linear-gradient(164deg, #111 0%, #333 100%)",
+        "label": "Button Background Color"
+      },
+      {
+        "type": "color",
+        "id": "button_text_color",
+        "default": "#fff",
+        "label": "Button Text Color"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "default": "#fff",
+        "label": "Text Color"
+      },
+      {
+        "type": "header",
+        "content": "Dimensions",
+        "info": "Set the section dimensions in pixels."
+      },
+      {
+        "type": "number",
+        "id": "max_width",
+        "default": 1000,
+        "label": "Max Width of Section"
+      },
+      {
+        "type": "number",
+        "id": "grid_gap",
+        "default": 0,
+        "label": "Gap Between Reviews"
+      },
+      {
+        "type": "number",
+        "id": "padding_top",
+        "default": 25,
+        "label": "Padding Top"
+      },
+      {
+        "type": "number",
+        "id": "padding_bottom",
+        "default": 25,
+        "label": "Padding Bottom"
+      },
+      {
+        "type": "number",
+        "id": "padding_left",
+        "default": 10,
+        "label": "Padding Left"
+      },
+      {
+        "type": "number",
+        "id": "padding_right",
+        "default": 10,
+        "label": "Padding Right"
+      }
+    ],
+	"blocks": [
+      {
+       "name": "Feature",
+       "type": "feature",
+       "settings": [
+         
+          {
+            "type": "image_picker",
+            "id": "background_image",
+            "label": "Background Image"
+          },
+          {
+            "type": "inline_richtext",
+            "id": "headline",
+            "label": "Headline",
+            "default": "<b>Feature Headline</b>"
+          },
+          {
+            "type": "inline_richtext",
+            "id": "cta",
+            "default": "Shop Now",
+            "label": "Call to Action"
+          },
+          {
+            "type": "url",
+            "id": "cta_link",
+            "label": "Call to Action Link"
+          }
+       ]
+      }
+    ],
+	"presets": [
+      {
+        "name": "🚀SP - Fun Grid",
+        "category": "Custom"
+      }
+    ]
+  }
+{% endschema %}
