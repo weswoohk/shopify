@@ -1,0 +1,38 @@
+@charset "UTF-8";
+.testimonial {
+  position: relative;
+  padding-bottom: var(--gutter-regular);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.testimonial__meta {
+  margin-top: var(--gutter-large);
+  position: relative;
+  width: auto;
+  padding-inline-start: 1.875rem;
+}
+.testimonial__meta:empty {
+  display: none;
+}
+.testimonial__meta:before {
+  content: "—";
+  position: absolute;
+  line-height: 1;
+  top: 0;
+}
+html[dir=rtl] .testimonial__meta:before {
+  right: 0;
+}
+html[dir=ltr] .testimonial__meta:before {
+  left: 0;
+}
+.testimonial__meta span {
+  display: block;
+  clear: both;
+}
+.modal .testimonial__meta {
+  position: relative;
+  bottom: 0;
+  margin-bottom: 0;
+}

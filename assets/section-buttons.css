@@ -1,0 +1,40 @@
+.buttons {
+  display: grid;
+}
+.buttons-wrapper {
+  font-size: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gutter-small);
+}
+@media screen and (min-width: 768px) {
+  .buttons-wrapper {
+    width: 50%;
+  }
+}
+@media screen and (min-width: 768px) {
+  .buttons-wrapper--fullwidth {
+    width: 100%;
+  }
+}
+.buttons-wrapper.align-content--horizontal-right {
+  justify-self: end;
+}
+.buttons-wrapper.align-content--horizontal-right .button {
+  text-align: right;
+}
+.buttons-wrapper.align-content--horizontal-left {
+  justify-self: start;
+}
+.buttons-wrapper.align-content--horizontal-left .button {
+  text-align: left;
+}
+.buttons-wrapper.align-content--horizontal-center {
+  justify-self: center;
+}
+.buttons-wrapper.align-content--horizontal-center .button {
+  text-align: center;
+}
+.buttons .button {
+  word-break: break-word;
+}
