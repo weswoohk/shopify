@@ -1,0 +1,18 @@
+{% liquid
+  if element == blank
+    assign element = 'shopify-section'
+  endif
+%}
+{%- if shape != 'none' -%}
+  {% style %}
+    {% if is_product %} #{{ element }}-{{ id }} .product-gallery-item[data-product-media-type="image"], {% endif %}
+    {% if is_rich_text %} #{{ element }}-{{ id }} .rich-text__image, {% endif %}
+    {% if is_article %} #{{ element }}-{{ id }} .article__featured-image, {% endif %}
+    #{{ element }}-{{ id }} .card__image,
+    #{{ element }}-{{ id }} .onboarding-svg, 
+    #{{ element }}-{{ id }} .lazy-image__overlay,
+    #{{ element }}-{{ id }} .lazy-image__preloader {
+      border-radius: {{ shape }} !important;
+    }
+  {% endstyle %}
+{%- endif -%}

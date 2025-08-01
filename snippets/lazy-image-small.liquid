@@ -1,0 +1,39 @@
+<figure 
+  class="lazy-image lazy-image--small {{ class }}" 
+  data-ratio style="padding-top: {{ 100 | divided_by: aspect_ratio }}%"
+>
+  {%- if image or image != blank -%}
+    
+    {%- liquid 
+      assign divide_ratio = 1 | divided_by: aspect_ratio
+      assign height_140 = 140 | times: divide_ratio | round
+      assign height_280 = 280 | times: divide_ratio | round
+      assign height_420 = 420 | times: divide_ratio | round
+    -%}
+    
+    <img 
+      src="{{ image | image_url: width: 140, height: height_140, crop: 'center' }}" 
+      srcset="
+        {{ image | image_url: width: 140, height: height_140, crop: 'center' }} 140w, 
+        {{ image | image_url: width: 280, height: height_280, crop: 'center' }} 280w, 
+        {{ image | image_url: width: 420, height: height_420, crop: 'center' }} 420w
+      "
+      alt="{{ image.alt | escape }}"
+      loading="lazy"
+      sizes="140px"
+      width="{{ image.width }}" height="{{ image.height }}"
+      onload="this.parentNode.classList.add('lazyloaded')"
+    />
+
+    {%- if settings.image_loading != 'none' -%}
+      <div class="lazy-image__preloader lazy-image__preloader--{{ settings.image_loading }}">
+        {%- if settings.image_loading != 'solid' -%}
+          <img style="opacity:1!important;image-rendering: pixelated;transition: none !important" src="{{ image | image_url: width: 10, height: 10, crop: 'center' }}" width="10" height="10" alt="" />
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+  {%- else -%}
+    {%- render 'lazy-svg', image: 'product-apparel-1', class: 'svg-placeholder svg-placeholder--background' -%}
+  {%- endif -%}
+</figure>

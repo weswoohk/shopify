@@ -1,0 +1,58 @@
+{%- if color_scheme != blank -%}
+  {%- if color_scheme != settings.color_scheme_container or force_color_scheme -%}
+
+    <style type="text/css">
+      
+      #shopify-section-{{ section.id }} {{ class }} {
+
+        --color-scheme-background: {{ color_scheme.settings.background }};
+        --color-scheme-borders: {{ color_scheme.settings.borders }};
+        --color-scheme-text: {{ color_scheme.settings.text }};
+        --color-scheme-text-foreground: {{ color_scheme.settings.background }};
+        --color-scheme-accent: {{ color_scheme.settings.accent }};
+        --color-scheme-accent-foreground: {{ color_scheme.settings.accent_foreground }};
+
+        --color-borders-main: {{ color_scheme.settings.text | color_modify: 'alpha', 0.15 }};
+        --color-borders-forms-primary: {{ color_scheme.settings.text | color_modify: 'alpha', 0.3 }};
+        --color-borders-forms-secondary: {{ color_scheme.settings.text | color_modify: 'alpha', 0.6 }};
+
+        --color-opacity-background-main: {{ color_scheme.settings.background | color_modify: 'alpha', 0 }};
+        --color-secondary-background-main: {{ color_scheme.settings.text | color_modify: 'alpha', 0.08 }};
+        --color-third-background-main: {{ color_scheme.settings.text | color_modify: 'alpha', 0.04 }};
+      }
+
+    </style>
+
+  {%- endif -%}
+{%- endif -%}
+
+<style {% if hide_section_bottom_border %} {% unless inner_color_scheme %} data-hide-section-bottom-border {% endunless %} {% endif %}>
+  {%- if is_header_group and hide_section_bottom_border == false -%}
+    
+  {%- elsif hide_section_bottom_border and class == blank -%}
+    #shopify-section-{{ section.id }} {
+      --border-width-sections: 0px;
+    }
+    #shopify-section-{{ section.id }}:after {
+      height: 0px;
+    }
+  {%- elsif hide_section_bottom_border == blank -%}
+    #shopify-section-{{ section.id }} + .shopify-section {
+      margin-top: {{ settings.border_width_sections }}px;
+    }
+  {%- endif -%}
+</style>
+
+{%- if prlx -%}
+  {%- if settings.parallax_effects or settings.zoom_effects -%}
+    <script>
+      if ( document.getElementById('shopify-section-{{ section.id }}').querySelector('css-slider') ) {
+        document.getElementById('shopify-section-{{ section.id }}').querySelector('css-slider').addEventListener('ready', ()=>{
+          window.prlxPush(document.getElementById('shopify-section-{{ section.id }}').querySelectorAll('[data-js-prlx-parent]'))
+        });
+      } else {
+        window.prlxPush(document.getElementById('shopify-section-{{ section.id }}').querySelectorAll('[data-js-prlx-parent]'));
+      }
+    </script>
+  {%- endif -%}
+{%- endif -%}

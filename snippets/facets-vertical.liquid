@@ -1,0 +1,240 @@
+{{ 'component-facets-vertical.css' | asset_url | stylesheet_tag }}
+{{ 'component-range-slider.css' | asset_url | stylesheet_tag }}
+{{ 'component-toggle.css' | asset_url | stylesheet_tag }}
+{{ 'component-swatch.css' | asset_url | stylesheet_tag }}
+
+{%- unless location == 'mobile' -%}
+  <span class="text-size--18 text-weight--bold facets-sidebar--heading element--hide-on-small">{{ 'collections.refine' | t }}</span>
+  {%- render 'facets-header', results: results, offset: offset, page_size: page_size, location: 'desktop' -%}
+{%- endunless -%}
+
+<facet-filters-form class="facets {% if location == 'desktop' %} element--hide-on-small  {% else %} sidebar-large-padding {% endif %}" data-location="{{ location }}">
+
+  <form id="FacetFiltersForm{%- if location == 'mobile' -%} Mobile {%- endif -%}" class="facets__form facets__form--{{ location }} facets__form--vertical">
+
+    {%- if results.terms -%}
+      <input type="hidden" name="q" value="{{ results.terms | escape }}">
+      <input name="options[prefix]" type="hidden" value="last">
+    {%- elsif results.current_vendor or results.current_type -%}
+      <input type="hidden" name="q" value="{{ results.current_vendor }}{{ results.current_type }}">
+    {%- endif -%}
+
+    {% unless location != 'mobile' %}
+    <div>
+      {%- if enable_sorting and results.products.size != 0 -%}
+        <div class="collection-filters__item sorting">
+          <div class="collection-filters__field">
+            <label class="collection-filters__label text-weight--bold" for="{{ location }}-SortBy">{{ 'collections.sort_by_label' | t }}</label>
+            <div class="select">
+              {%- assign sort_by = results.sort_by | default: results.default_sort_by -%}
+              <select name="sort_by" class="select__select collection-filters__sort" id="{{ location }}-SortBy" aria-describedby="a11y-refresh-page-message">
+                {%- for option in results.sort_options -%}
+                  <option value="{{ option.value | escape }}"{% if option.value == sort_by %} selected="selected"{% endif %}>{{ option.name | escape }}</option>
+                {%- endfor -%}
+              </select>
+            </div>
+          </div>
+          <noscript>
+            <button type="submit" class="button button button--regular button--outline">{{ 'collections.sort_button' | t }}</button>
+          </noscript>
+        </div>
+      {%- endif -%}
+    </div>
+    {% endunless %}
+
+    {%- if enable_filtering -%}
+
+      <div class="facets__wrapper">
+
+        {%- if location == 'mobile' -%}
+          <div class="facets-sidebar-header">
+            <span class="text-size--18 text-weight--bold facets-sidebar--heading element--hide-on-small">{{ 'collections.refine' | t }}</span>
+            {%- render 'facets-header', results: results, offset: offset, page_size: page_size, location: 'mobile' -%}
+          </div>
+        {%- endif -%}
+  
+        {%- assign color_label = settings.color_swatches_labels | split: ',' -%}
+
+        {%- for filter in results.filters -%}
+
+          {%- case filter.type -%}
+            
+            {%- when 'boolean' or 'list' -%}
+
+              {%- liquid
+                if filter.presentation == 'swatch'
+                  assign has_visual_display = true  
+                endif
+              -%}
+
+              <div class="facets__disclosure js-filter" data-index="{{ forloop.index }}-{{ location }}" 
+                {% if filter.operator == 'AND' %} data-and-operator {% endif %}
+              >
+               
+                <toggle-tab class="toggle toggle--facets" 
+                  data-togglepack-alternate
+                  data-toggle-inert
+                >
+
+                  <div class="toggle__title" data-js-title tabindex="0" aria-expanded="false" role="button" aria-controls="toggle-{{ forloop.index }}-{{ filter.label | escape | handleize }}-{{ location }}">
+                    <div class="toggle__heading">
+                       <span class="facets__summary-text text-transform--uppercase">
+                        {{ filter.label | escape }} 
+                        </span>
+                    </div>
+                  </div>                
+                  
+                  <div id="toggle-{{ forloop.index }}-{{ filter.label | escape | handleize }}-{{ location }}" data-js-content class="toggle__content rte remove-empty-space" role="region" inert>
+                    <div class="facets__display">
+                      {%- if filter.operator == 'AND' -%}
+                        <span class="facets__and-helper-text--mobile text-size--16 text-color--opacity hide">{{ 'collections.match_all_label' | t }}</span>
+                      {%- endif -%}
+                      <ul class="facets__list list-unstyled {% if has_visual_display %} swatch-list {% endif %}" role="list">
+                          {%- liquid
+                            assign sorted_values = filter.values
+                            if filter.operator == 'AND'  
+                              assign active_filter_values = filter.values | where: 'active', true
+                              assign inactive_filter_values = filter.values | where: 'active', false
+                              assign sorted_values = active_filter_values | concat: inactive_filter_values
+                            endif
+                          -%}
+                          {%- for value in sorted_values -%}
+                          {%- assign filter_downcased = filter.label | downcase -%}
+                          <li class="list-menu__item facets__item {% if has_visual_display %} swatch-list__item swatch-list__item--{{ value.display.type }} {% endif %} {% if color_label contains filter_downcased and settings.color_swatches %} facets__item--swatch {% endif %}">
+                            <label for="{{ location }}-Filter-{{ filter.label | escape }}-{{ forloop.index }}" class="facet-checkbox{% if value.count == 0 and value.active == false %} facet-checkbox--disabled{% endif %}">
+                              <input type="checkbox"
+                                class="styled-checkbox"
+                                name="{{ value.param_name }}"
+                                value="{{ value.value }}"
+                                id="{{ location }}-Filter-{{ filter.label | escape }}-{{ forloop.index }}"
+                                {% if value.active %}checked{% endif %}
+                                {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                              >
+                              {%- if color_label contains filter_downcased and settings.color_swatches -%}
+                                {%- liquid 
+                                  assign color_swatch_name = value.value | handle | append: '.png'
+                                  assign color_swatch_image = images[color_swatch_name]
+                                  assign color_swatch_background = value.value | downcase | escape | replace: ' ', ''
+                                -%}
+                                {%- if color_swatch_image != blank -%}
+                                  <img class="swatch swatch--color"
+                                    src="{{ color_swatch_image | image_url: width: 30, height: 30, crop: 'center' }}"
+                                    srcset="
+                                      {{ color_swatch_image | image_url: width: 30, height: 30, crop: 'center' }} 30w,
+                                      {{ color_swatch_image | image_url: width: 60, height: 60, crop: 'center' }} 60w,
+                                      {{ color_swatch_image | image_url: width: 90, height: 90, crop: 'center' }} 90w
+                                    "
+                                    sizes="30px" width="30" height="30"
+                                    loading="lazy"
+                                    alt="{{ color_swatch_image.alt | escape }}"
+                                  />
+                                {%- else -%}
+                                  <span class="swatch swatch--image" style="background-color:{{ color_swatch_background }}"></span>
+                                {%- endif -%}
+                              {%- endif -%}
+
+                              {% if has_visual_display %}
+                                {% render 'facets-swatch', type: value.display.type, value: value.display.value, presentation: filter.presentation %}
+                                <span class="text-size--14">{{ value.label | escape }} ({{ value.count }})</span>
+                              {%- else -%}
+                                {{ value.label | escape }} ({{ value.count }})
+                              {%- endif -%}
+
+                            </label>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                      
+                    </div>
+                  </div>
+
+                </toggle-tab>
+              </div>
+
+            {%- when 'price_range' -%}
+              {%- liquid 
+                assign currencies_using_comma_decimals = 'ANG,ARS,BRL,BYN,BYR,CLF,CLP,COP,CRC,CZK,DKK,EUR,HRK,HUF,IDR,ISK,MZN,NOK,PLN,RON,RUB,TRY,UYU,VES,VND' | split: ','
+                assign uses_comma_decimals = false
+                if currencies_using_comma_decimals contains cart.currency.iso_code
+                  assign uses_comma_decimals = true
+                endif
+              -%}
+
+              <div class="facets__disclosure js-filter" data-index="{{ forloop.index }}-{{ location }}">
+                <toggle-tab class="toggle toggle--facets" 
+                    data-togglepack-alternate
+                    data-toggle-inert
+                    {{ block.shopify_attributes }}
+                  >
+
+                  <div class="toggle__title" data-js-title tabindex="0" aria-expanded="false" role="button" aria-controls="toggle-{{ forloop.index }}-{{ filter.label | escape | handleize }}-{{ location }}">
+                    <div class="toggle__heading">
+                       <span class="facets__summary-text text-weight--medium text-transform--uppercase">
+                        {{ filter.label | escape }} 
+                        </span>
+                    </div>
+                  </div>   
+                
+                  <div id="toggle-{{ forloop.index }}-{{ filter.label | escape | handleize }}-{{ location }}" data-js-content class="toggle__content rte remove-empty-space" role="region" inert>
+                  
+                    <price-range class="facets__price">
+                      <div class="field">
+                        <label class="field__label visually-hidden" for="{{ location }}-Search-In-Modal">{{ 'collections.from' | t }}</label>
+                        <span class="field__currency">{{ cart.currency.symbol }}</span>
+                        <input class="field__input"
+                          name="{{ filter.min_value.param_name }}"
+                          id="{{ location }}-Filter-{{ filter.label | escape }}-GTE"
+                          {%- if filter.min_value.value -%}
+                            {%- if uses_comma_decimals -%}value="{{ filter.min_value.value | money_without_currency | replace: '.', '' | round | replace: ',', '.' }}"{%- else -%}value="{{ filter.min_value.value | money_without_currency | round | replace: ',', '' }}"{% endif %}
+                          {%- endif -%}
+                          type="number"
+                          placeholder="0"
+                          min="0"
+                          {%- if uses_comma_decimals -%}max="{{ filter.range_max | money_without_currency | replace: '.', '' | round | replace: ',', '.' }}"{%- else -%}max="{{ filter.range_max | money_without_currency | round | replace: ',', '' }}"{% endif %}
+                        >
+                      </div>
+                      <label class="field__label" for="{{ location }}-Search-In-Modal">{{ 'collections.to' | t }}</label>
+                      <div class="field">
+                        <span class="field__currency">{{ cart.currency.symbol }}</span>
+                        <input class="field__input"
+                          name="{{ filter.max_value.param_name }}"
+                          id="{{ location }}-Filter-{{ filter.label | escape }}-LTE"
+                          {%- if filter.max_value.value -%}{%- if uses_comma_decimals -%}value="{{ filter.max_value.value | money_without_currency | replace: '.', '' | ceil | replace: ',', '.' }}"{%- else -%}value="{{ filter.max_value.value | ceil | money_without_currency | replace: ',', '' }}"{% endif %}
+                          {%- endif -%}
+                          type="number"
+                          min="0"
+                          {%- if uses_comma_decimals -%}
+                            placeholder="{{ filter.range_max | money_without_currency | replace: '.', '' | ceil | replace: ',', '.' }}"
+                            max="{{ filter.range_max | money_without_currency | replace: '.', '' | ceil | replace: ',', '.' }}"
+                          {%- else -%}
+                            placeholder="{{ filter.range_max | money_without_currency | ceil | replace: ',', '' }}"
+                            max="{{ filter.range_max | money_without_currency | ceil | replace: ',', '' }}"
+                          {% endif %}
+                        >
+                      </div>
+                    </price-range>
+                    
+                    <div
+                      id="{{ location }}-facets-price-range-slider"
+                      data-js-price-range-slider
+                    ></div>
+
+                  </div>
+                </toggle-tab>
+              </div>
+
+          {%- endcase -%}
+
+        {%- endfor -%}
+        
+        <noscript>
+          <button type="submit" class="facets__button button button--regular button--outline">{{ 'collections.filter_button' | t }}</button>
+        </noscript>
+        
+      </div>
+    {%- endif -%}
+  </form>
+
+</facet-filters-form>
+
+<script src="{{ 'component-toggle.js' | asset_url }}" defer></script>

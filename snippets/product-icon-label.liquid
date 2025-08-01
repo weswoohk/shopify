@@ -1,0 +1,36 @@
+{%- liquid
+  if icon == blank
+    assign icon_name = label | handle | append: '.png'
+    assign icon_image = images[icon_name] 
+    if icon_image != blank  
+      assign icon = icon_image
+    endif
+  endif
+-%}
+
+{%- if icon != blank or label != blank -%}
+
+  <span class="pill pill--has-icon {{ style }}">
+
+    {%- if icon != blank -%}
+        <span class="pill__icon" aria-hidden="true">
+        <img src="{{ icon | image_url: width: 21, height: 21, crop: 'center' }}"
+          srcset="
+            {{ icon | image_url: width: 21, height: 21, crop: 'center' }} 24w,
+            {{ icon | image_url: width: 42, height: 42, crop: 'center' }} 48w,
+            {{ icon | image_url: width: 64, height: 64, crop: 'center' }} 72w
+          "
+          sizes="21px" width="21" height="21"
+          loading="lazy"
+          alt="{{ icon.alt | escape }}"
+        />
+      </span>
+    {%- endif -%}
+
+    {%- unless label == blank -%}
+      <span class="pill_label">{{ label | escape }}</span>
+    {%- endunless -%}
+
+  </span>
+
+{%- endif -%}

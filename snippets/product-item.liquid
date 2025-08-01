@@ -1,0 +1,263 @@
+{%- assign product_variant = product.selected_or_first_available_variant -%}
+
+<div id="product-item-{{ product.id }}" class="card card--hover
+  {% if settings.product_card_remove_padding %} card--no-padding {% endif %}
+  {% if settings.product_card_remove_padding %} card--no-radius {% endif %}
+  product-item product-item-rating--{{ settings.reviews_badge_desktop }}" 
+  data-js-product-item data-js-prlx-parent
+  {% unless settings.product_card_remove_padding %} style="--border-radius-grid: {{ settings.product_card_border_radius_grid }}px" {% endunless %}
+> 
+
+  <div class="card__hover"></div>
+
+  {%- liquid
+    assign aspect_ratio = settings.product_card_aspect_ratio
+    if settings.within_filter_enabled and product_collection
+      assign product_url = product.url | within: product_collection
+    else
+      assign product_url = product.url
+    endif
+  -%}
+
+  <a href="{{ product_url }}" title="{{ product.title | escape }}" data-instant class="product-item__invisible-link">{{ product.title | escape }}</a>
+
+  <div class="card__content">
+
+    <div class="product-item__thumbnail">
+
+      <div
+        class="product-item__image card__image product-item__image--no-text"
+        {% if blank_product %} style="padding-top:100%" {% else %} style="padding-top:{{ 100 | divided_by: aspect_ratio }}%" {% endif %}
+        data-js-product-item-image
+        data-js-prlx-children
+      >
+
+        {%- liquid 
+
+          unless layout == 'shop-the-look'
+
+            if layout_desktop contains 'grid-4'
+
+              assign sizes = '(max-width: 767px) 50vw, (max-width: 1280px) 33vw, '
+
+              if settings.page_boxed_layout
+                assign sizes = sizes | append: '(max-width: 1360px) 25vw, 340px"'
+              else
+                assign sizes = sizes | append: '25vw"'
+              endif
+
+            elsif layout_desktop contains 'grid-2'
+
+              assign sizes = '(max-width: 767px) 100vw, '
+
+              if settings.page_boxed_layout
+                assign sizes = sizes | append: '(max-width: 1360px) 50vw, 680px"'
+              else
+                assign sizes = sizes | append: '50vw"'
+              endif
+
+            else
+
+              assign sizes = '(max-width: 1023px) 50vw, '
+
+              if settings.page_boxed_layout
+                assign sizes = sizes | append: '(max-width: 1360px) 33vw, 450px"'
+              else
+                assign sizes = sizes | append: '33vw"'
+              endif
+
+            endif
+
+            if layout_mobile contains 'grid-palm-2'
+              assign sizes = sizes | prepend: 'sizes="(max-width: 474px) 50vw, '
+            else
+              assign sizes = sizes | prepend: 'sizes="(max-width: 474px) 100vw, '
+            endif
+
+          else
+
+            assign sizes = 'sizes="(max-width: 1023px) 50vw, '
+
+            if settings.page_boxed_layout
+              assign sizes = sizes | append: '(max-width: 1360px) 25vw, 680px"'
+            else
+              assign sizes = sizes | append: '25vw"'
+            endif
+
+
+          endunless
+          
+          if product.featured_media == blank or blank_product
+            assign no = index | modulo: 4 | plus: 1
+            assign placeholder_svg = 'product-apparel-' | append: no
+            echo placeholder_svg | placeholder_svg_tag: 'onboarding-svg'
+          else
+
+            if section.index == 1 and index == 1 and section.location == 'template'
+              assign preload = 'high'
+            elsif section.index == 1 and index <= 3 and section.location == 'template'
+              assign preload = true
+            else 
+              assign preload = false
+            endif
+
+            render 'lazy-image', image: product.featured_media, alt: product.title, ratio: aspect_ratio, type: 'background', class: 'product-item__image-figure product-item__image-figure--top', sizes: sizes, preload: preload, prlx: true
+
+            unless settings.product_card_hover contains 'repetition'
+
+              if settings.product_card_show_secondary_image and product.media[1]
+                render 'lazy-image', image: product.media[1], alt: product.title, ratio: aspect_ratio, type: 'background', class: 'product-item__image-figure product-item__image-secondary product-item__image-figure--top', sizes: sizes, prlx: true, no_preloader: true
+              endif
+
+            else
+
+              if settings.product_card_show_secondary_image and product.media[1]
+                assign repetition_layer = product.media[1]
+                assign repetition_preload = false
+              else
+                assign repetition_layer = product.featured_media
+                assign repetition_preload = preload
+              endif
+
+              if settings.product_card_hover contains 'repetition-extra' 
+                render 'lazy-image', image: product.featured_media, alt: product.title, ratio: aspect_ratio, type: 'background', class: 'product-item__image-figure product-item__image-repetition product-item__image-figure--top', sizes: sizes, prlx: true, no_preloader: true, preload: preload
+              endif
+
+              render 'lazy-image', image: repetition_layer, alt: product.title, ratio: aspect_ratio, type: 'background', class: 'product-item__image-figure product-item__image-repetition product-item__image-figure--top', sizes: sizes, prlx: true, no_preloader: true, preload: repetition_preload
+
+            endunless
+            
+          endif
+
+        -%}
+
+          {%- if settings.product_grid_image_overlay != 'rgba(0,0,0,0)' and settings.product_grid_image_overlay_opacity > 0 -%}
+            <div class="product-item__image-overlay" style="background-color: {{ settings.product_grid_image_overlay }}; opacity: {{ settings.product_grid_image_overlay_opacity }}%"></div>
+          {%- endif -%}
+
+      </div>
+
+      {%- if settings.enable_quick_buy and product.available -%}
+
+        <div class="product-item__quick-buy product-item__quick-buy--{{ settings.location_quick_buy }}"
+          {% if settings.product_card_remove_padding %} style="margin-left: calc(var(--gutter-small) * -1)" {% endif %}
+        >
+
+          {%- if product.has_only_default_variant -%}
+      
+            <quick-add-to-cart class="quick-add-to-cart">
+              <product-form {% if settings.cart_action == 'overlay' %} data-ajax-cart {% endif %}>
+                <div class="quick-add-to-cart-button">
+                  {%- form 'product', product -%}
+                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                    <button class="go go--cart" type="submit" name="add" data-js-product-add-to-cart title="{{ 'products.page.add_to_cart_button' | t }}" tab-index="-1">
+                      <span class="visually-hidden">{{ 'products.page.add_to_cart_button' | t }}</span> 
+                      <span class="go__cart">{%- render 'theme-symbols' icon: 'cart' -%}</span>
+                      <span class="go__loader">
+                        <svg viewBox="25 25 50 50"><circle cx="50" cy="50" r="20" fill="none" stroke-width="4"/></svg>
+                      </span>
+                    </button>
+                  {%- endform -%} 
+                </div>
+              </product-form>
+            </quick-add-to-cart>
+        
+          {%- else -%}
+
+            <button class="go go--cart" data-js-product-open-popup title="{{ 'products.page.add_to_cart_button' | t }}" tabindex="-1">
+              <span class="visually-hidden">{{ 'products.page.add_to_cart_button' | t }}</span> 
+              {%- render 'theme-symbols' icon: 'cart' -%}
+            </button>
+          
+          {%- endif %}
+        
+        </div>
+
+      {%- endif -%}
+
+    </div>
+
+    {%- liquid
+      assign metafield_reference = settings.product_card_extra_caption_metafield
+      if metafield_reference != blank
+        assign metafield_keys = metafield_reference | split: '.'
+        assign metafield_value = product.metafields[metafield_keys[0]][metafield_keys[1]]        
+      endif
+    -%}
+
+    <div class="card__text product-item__text 
+      {% if settings.product_card_remove_padding %} gutter--product {% endif %}
+      gutter-top--{% if settings.product_card_text_size contains '30' %}regular{% else %}small{% endif %} 
+      remove-empty-space text-align--{{ settings.product_card_text_alignment }}"
+    >
+
+      {%- if metafield_value != blank and settings.product_card_extra_caption_position == 'above' -%}
+        <span class="{{ settings.product_card_extra_caption_size }}" style="margin-bottom:.5em;display:block">{{ metafield_value | escape }}</span>
+      {%- endif -%}
+
+      <div class="product-item__title">
+        <span class="text-animation--underline text-line-height--small
+          {% if settings.product_card_text_weight %} text-weight--bold {% elsif settings.product_card_text_size == '18' and settings.text_underline == 'text' %} text-animation--underline-small {% endif %}
+          {% if settings.product_card_text_transform %} text-transform--uppercase {% endif %}
+          text-size--{{ settings.product_card_text_size }}"
+        >
+          {%- liquid 
+            unless blank_product 
+              echo product.title | escape
+            else 
+              echo 'general.onboarding.product_title' | t
+            endunless
+          -%}
+        </span>
+      </div>
+
+      {%- if metafield_value != blank and settings.product_card_extra_caption_position == 'below' -%}
+        <span class="{{ settings.product_card_extra_caption_size }}" style="margin-top:.5em;display:block">{{ metafield_value | escape }}</span>
+      {%- endif -%}
+
+      <div class="product-item__price {% if settings.product_card_text_size == '30' %} text-size--24 {% else %} text-size--18 {% endif %}">
+        <div>
+          {% unless blank_product %}
+            {%- render 'product-price', target: product, variant: product_variant, product_price_varies: product.price_varies, static: true -%}
+          {%- else -%}
+            {{ 9999 | money }}
+          {%- endunless -%}
+        </div>
+      </div>
+    
+    </div>
+
+    {%- liquid
+
+      assign show_rating = false
+      if settings.reviews_badge_desktop != "no" or settings.reviews_badge_mobile
+        assign show_rating = true
+      endif
+
+     if show_rating
+          render 'product-rating', product: product, type: 'compact'
+      endif
+
+      unless blank_product or settings.show_badges == false
+        render 'product-badges', product: product
+      endunless
+      
+    -%}
+
+  </div>
+
+  {%- if settings.enable_quick_buy and product.available and product.has_only_default_variant == false -%}
+    {%- liquid 
+      assign block_id = 'add-quick-buy-' | append: section.id | append: '-' | append: index
+      render 'product-quick-buy', product: product, variants_style: settings.variants_style, show_color_swatches: settings.color_swatches, change_variant_images: settings.variant_images, default_to_first_variant: false, add_to_cart_price: true, show_variant_quantities: 'no', id: block_id
+    -%}
+    <span class="product-item__quick-buy-background product-item__quick-buy-background--{{ settings.location_quick_buy }}"><span style="aspect-ratio: {{ aspect_ratio }}"><span></span></span></span>
+  {%- endif -%}
+
+</div>
+
+<script>
+  if ( document.getElementById('product-item-{{ product.id }}').getBoundingClientRect().y <= window.innerHeight ) {
+    document.getElementById('product-item-{{ product.id }}').classList.add('prlx--on');
+  }
+</script>

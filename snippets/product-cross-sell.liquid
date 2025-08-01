@@ -1,0 +1,74 @@
+<div class="cart-item {{ class }}" data-js-product-item>
+
+  {%- unless blank_product -%}
+
+    <a href="{{ product.url }}" class="cart-item__thumbnail">
+      {%- render 'lazy-image-small', image: product.featured_media, alt: product.title, aspect_ratio: settings.cart_image_ratio, class: 'lazy-image--scale-animation' -%}
+    </a>
+
+    <div class="cart-item__content sidebar__inner-element">
+
+      <div>
+
+        <a href="{{ product.url }}" class="cart-item__title text-size--16">
+          <span class="text-animation--underline"><span>{{ product.title | escape }}</span></span>
+        </a>
+
+        <div class="cart-item__price text-size--16">
+          {%- liquid
+            assign product_variant = product.selected_or_first_available_variant
+            render 'product-price', target: product, variant: product_variant, product_price_varies: product.price_varies, static: true
+          -%}
+        </div>
+
+        {%- if product.available -%}
+
+          {%- if product.has_only_default_variant -%}
+        
+            <quick-add-to-cart class="quick-add-to-cart">
+              <product-form {% if settings.cart_action == 'overlay' %} data-ajax-cart {% endif %}>
+                <div class="quick-add-to-cart-button">
+                  {%- form 'product', product -%}
+                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                    <button id="cart-upsell-add-to-cart" class="add-to-cart button button--small button--outline--hover-accent button--loader" type="submit" name="add" data-js-product-add-to-cart>
+                      <span class="button__text">
+                        {{ 'cart.quick_buy_product' | t }}
+                      </span>
+                      <span class="button__loader">{{ 'products.grid.loading' | t }}</span>
+                    </button>
+                  {%- endform -%} 
+                </div>
+              </product-form>
+            </quick-add-to-cart>
+              
+          {%- else -%}
+
+            <a class="button button--small button--outline--hover-accent" href="{{ product.url }}">
+              <span class="button__text">
+                {{ 'cart.quick_view_product' | t }}
+              </span>
+            </a>
+          
+          {%- endif %}
+
+        {%- endif -%}
+
+      </div>
+            
+      {%- if product.available and product.has_only_default_variant and type == 'sidebar' -%}
+        <script>
+          document.querySelector('#cart-upsell-add-to-cart').addEventListener('click', ()=>{
+            if ( document.getElementById('site-cart-sidebar') ) {
+              setTimeout(()=>{
+                document.querySelector('#site-cart-sidebar .sidebar__container').scrollTo({top: 0, behavior: 'smooth'});
+              }, 150);
+            } 
+          });
+        </script>
+      {%- endif -%}
+    
+    </div>
+
+  {%- endunless -%}
+
+</div>

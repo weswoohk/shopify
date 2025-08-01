@@ -1,0 +1,170 @@
+<div class="page-heading 
+  {% unless no_border %} element--has-grid-borders {% endunless %}
+  {% if custom_margin == blank %} gutter-bottom--regular {% else %} {{ custom_margin }} {% endif %} 
+  gutter-top--regular"
+>
+
+  <div class="page-heading__text-content">
+
+    {%- if settings.show_breadcrumb -%}
+      
+      <nav class="breadcrumb text-size--14" role="navigation" aria-label="breadcrumbs">
+
+        <span class="breadcrumb__link"><a href="{{ routes.root_url }}"><span class="text-animation--underline text-animation--underline-small">{{ 'general.breadcrumb.homepage' | t }}</span></a></span>
+
+        {%- if template.name == 'search' -%}
+
+          <span class="breadcrumb__separator">/</span>
+          <span class="breadcrumb__current">{{ 'general.breadcrumb.search' | t: terms: search.terms }}</span>
+
+        {%- else -%}
+        
+          <span class="breadcrumb__separator">/</span>
+          {%- if template.name == 'collections' -%}
+            <span class="breadcrumb__current">{{ 'general.breadcrumb.collections' | t }}</span>
+          {%- elsif collection -%}
+            <span class="breadcrumb__link"><a href="{{ routes.collections_url }}"><span class="text-animation--underline text-animation--underline-small">{{ 'general.breadcrumb.collections' | t }}</span></a></span>
+          {%- endif -%}
+
+          {%- if collection -%}
+
+            <span class="breadcrumb__separator">/</span>
+            {%- if template.name == 'collection' -%}
+              <span class="breadcrumb__current">{{ collection.title | escape }}</span>
+            {%- else -%}
+              <span class="breadcrumb__link"><a href="{{ collection.url }}"><span class="text-animation--underline text-animation--underline-small">{{ collection.title | escape }}</span></a></span>
+            {%- endif -%}
+
+          {%- elsif article -%}
+
+            <span class="breadcrumb__link"><a href="{{ blog.url }}"> <span class="text-animation--underline text-animation--underline-small">{{ blog.title | escape }}</span></a></span>
+            <span class="breadcrumb__separator">/</span>
+            <span class="breadcrumb__current">{{ article.title | escape }}</span>
+
+          {%- elsif blog -%}
+
+            <span class="breadcrumb__current">{{ blog.title | escape }}</span>
+
+          {%- elsif template contains 'customers' -%}
+
+            {%- if template.name == 'address' or template.name == 'order' -%}
+              <span class="breadcrumb__link"><a href="{{ routes.account_url }}"><span class="text-animation--underline text-animation--underline-small">{{ 'general.breadcrumb.account.title' | t }}</span></a></span>
+              <span class="breadcrumb__separator">/</span>
+              <span class="breadcrumb__current">
+                {%- if template.name == 'addresses' -%}
+                  {{ 'general.breadcrumb.account.addresses' | t }}</span>
+                {%- elsif template.name == 'order' -%}
+                  {{ 'general.breadcrumb.account.orders' | t }}</span>
+                {%- endif -%}
+              </span>
+            {%- else -%}
+              <span class="breadcrumb__current">{{ 'general.breadcrumb.account.title' | t }}</span>
+            {%- endif -%}
+
+          {%- elsif template.name == 'cart' -%}
+
+            <span class="breadcrumb__current">{{ 'general.breadcrumb.cart' | t }}</span>
+
+          {%- elsif template.name == '404' -%}
+
+            <span class="breadcrumb__current">{{ 'general.breadcrumb.404' | t }}</span>
+
+          {%- else -%}	
+
+            <span class="breadcrumb__current">{{ page.title | escape }}</span>
+
+          {%- endif -%}
+
+          {%- if product -%}
+
+            <span class="breadcrumb__separator">/</span>
+            <span class="breadcrumb__current">{{ product.title | escape }}</span>
+
+          {%- endif -%}
+
+        {%- endif -%}
+
+      </nav>
+
+    {%- endif -%}
+
+    <h1 class="page-heading__title gutter-top--regular
+      {{ settings.page_titles_font }} {{ settings.page_titles_size }} {{ settings.page_titles_line_height }}
+      {% if settings.page_title_bold %} text-weight--bold {% endif %}
+      {% if settings.page_title_italic %} text-style--italic {% endif %}
+      {% if settings.page_transform_uppercase %} text-transform--uppercase {% endif %}
+    ">
+      {%- liquid
+        if title_is_translation 
+          echo title | t
+        else 
+          echo title | escape
+        endif
+      -%}
+    </h1>
+
+    {%- unless content == blank -%}
+      <div class="page-heading__content rte {{ content_style }}">{{ content }}</div>
+    {%- endunless -%}
+    
+  </div>
+
+  {%- unless collection.products.size == 0 -%}
+    {%- if enable_sorting or enable_filtering -%}
+
+      <div class="page-heading__actions {% if page_layout_with_sidebar == false %} hide portable-show {% endif %}">
+
+        {%- if enable_sorting and results.products.size != 0 -%}
+
+          {%- unless page_layout_with_sidebar == false and enable_filtering == true -%}
+
+            <facet-filters-form class="facets {% if enable_filtering %} portable-hide {% endif %}">
+
+              <form id="FacetSortForm" class="facets__form facets__form--header facets__form--vertical element--layout-flex">
+
+                {%- if results.terms -%}
+                  <input type="hidden" name="q" value="{{ results.terms | escape }}">
+                  <input name="options[prefix]" type="hidden" value="last">
+                {%- elsif results.current_vendor or results.current_type -%}
+                  <input type="hidden" name="q" value="{{ results.current_vendor }}{{ results.current_type }}">
+                {%- endif -%}
+                
+                <label class="text-weight--bold element--white-space-nowrap portable-hide" for="desktop-SortBy">{{ 'collections.sort_by_label' | t }}</label>
+
+                {%- assign sort_by = results.sort_by | default: results.default_sort_by -%}
+
+                <select name="sort_by" class="select__select collection-filters__sort" id="desktop-SortBy" aria-describedby="a11y-refresh-page-message">
+                  {%- for option in results.sort_options -%}
+                    <option value="{{ option.value | escape }}"{% if option.value == sort_by %} selected="selected"{% endif %}>{{ option.name | escape }}</option>
+                  {%- endfor -%}
+                </select>
+
+                <noscript>
+                  <button type="submit" class="button button button--regular button--outline">{{ 'collections.sort_button' | t }}</button>
+                </noscript>
+                
+              </form>
+
+            </facet-filters-form>
+
+          {%- endunless -%}
+
+        {%- endif %}
+
+        {%- if enable_filtering and results.products-size != 0 -%}
+          <div class="hide portable-show">
+            <div class="collection-heading__actions">
+              <button id="collection-filters-handle" class="button button--outline button--fullwidth button--no-text-transform button--mobile-arrow" aria-controls="site-filters-sidebar" aria-expanded="false" onclick="setTimeout(()=>{document.querySelectorAll('#FacetFiltersFormMobile show-more')?.forEach(elm=>{elm.init()})},10);document.getElementById('site-filters-sidebar').show()" style="justify-content:left">
+                <span class="button__text">{{ 'collections.filter_and_sort' | t }}</span>
+                <span class="button__arrow">{% render 'theme-symbols', icon: 'plus' %}</span>
+              </button>
+            </div>
+          </div>
+        {%- endif -%}
+        
+      </div>
+
+    {%- endif -%}
+  {%- endunless -%}
+
+</div>

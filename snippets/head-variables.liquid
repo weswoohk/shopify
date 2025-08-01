@@ -1,0 +1,245 @@
+{%- liquid
+  assign headings_font = settings.headings_font
+  assign body_font = settings.body_font
+-%}
+
+{%- unless headings_font.system? -%}
+  <link rel="preload" href="{{ headings_font | font_url }}" as="font" type="font/woff2" crossorigin>
+{%- endunless -%}
+
+{%- unless body_font.system? -%}
+  <link rel="preload" href="{{ body_font | font_url }}" as="font" type="font/woff2" crossorigin>
+{%- endunless -%}
+
+<style type="text/css">
+
+  {%- comment -%} Fonts {% endcomment %}
+  {%- liquid 
+
+    echo headings_font | font_face: font_display: 'swap'
+    assign headings_font_bold = headings_font | font_modify: 'weight', '+200' 
+    if headings_font_bold == blank 
+      assign headings_font_bold = headings_font | font_modify: 'weight', '700' 
+    endif 
+    echo headings_font_bold | font_face: font_display: 'swap'
+
+    if settings.section_title_italic 
+      assign headings_font_italic = headings_font | font_modify: 'style', 'italic' 
+      echo headings_font_italic | font_face: font_display: 'swap'
+    endif
+
+    echo body_font | font_face: font_display: 'swap'
+    assign body_font_bold = body_font | font_modify: 'weight', '+200' 
+    if body_font_bold == blank 
+      assign body_font_bold = body_font | font_modify: 'weight', '700' 
+    endif 
+    echo body_font_bold | font_face: font_display: 'swap' 
+    
+  -%}
+
+</style>
+<style type="text/css">
+
+  :root {
+
+    /* Font variables */
+
+    --font-stack-headings: {{ headings_font.family }}, {{ headings_font.fallback_families }};
+    --font-weight-headings: {{ headings_font.weight }};
+    {%- if headings_font_bold -%}
+      --font-weight-headings-bold: {{ headings_font_bold.weight }}; 
+    {%- else -%}
+      --font-weight-headings-bold: 700;
+    {%- endif -%}
+    --font-style-headings: {{ headings_font.style }};
+
+    --font-stack-body: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --font-weight-body: {{ body_font.weight }};
+    {%- if body_font_bold -%}
+      --font-weight-body-bold: {{ body_font_bold.weight }}; 
+    {%- else -%}
+      --font-weight-body-bold: 700;
+    {%- endif -%}
+    --font-style-body: {{ body_font.style }};
+
+    --font-weight-menu: var(--font-weight-body); 
+
+    --base-headings-size: {{ settings.headings_size }};
+    --base-headings-line: {{ settings.headings_line }};
+    --base-headings-spacing: {{ settings.headings_spacing | divided_by: 100.0 }}em;
+
+    --base-body-size: {{ settings.body_size }};
+    --base-body-line: {{ settings.body_line }};
+    --base-body-spacing: {{ settings.body_spacing | divided_by: 100.0 }}em;
+
+    --base-quotes-size: {{ settings.quotes_size }};
+    --base-quotes-line: {{ settings.quotes_line }};
+    --base-quotes-spacing: {{ settings.quotes_spacing | divided_by: 100.0 }}em;
+
+    /* Color variables */
+
+    --color-background-body: {{ settings.color_background_body }};
+    
+    --color-scheme-background: {{ settings.color_scheme_container.settings.background }};
+    --color-scheme-borders: {{ settings.color_scheme_container.settings.borders }};
+    --color-scheme-text: {{ settings.color_scheme_container.settings.text }};
+    --color-scheme-text-foreground: {{ settings.color_scheme_container.settings.background }};
+    --color-scheme-accent: {{ settings.color_scheme_container.settings.accent }};
+    --color-scheme-accent-foreground: {{ settings.color_scheme_container.settings.accent_foreground }};
+
+    --color-borders-main: {{ settings.color_scheme_container.settings.text | color_modify: 'alpha', 0.15 }};
+    --color-borders-forms-primary: {{ settings.color_scheme_container.settings.text | color_modify: 'alpha', 0.3 }};
+    --color-borders-forms-secondary: {{ settings.color_scheme_container.settings.text | color_modify: 'alpha', 0.6 }};
+
+    --color-opacity-background-main: {{ settings.color_scheme_container.settings.background | color_modify: 'alpha', 0 }};
+    --color-secondary-background-main: {{ settings.color_scheme_container.settings.text | color_modify: 'alpha', 0.08 }};
+    --color-third-background-main: {{ settings.color_scheme_container.settings.text | color_modify: 'alpha', 0.04 }};
+
+    --color-product-card-popup-background: {{ settings.product_quick_buy_background_background }};
+    --color-product-card-popup-background-opacity: {{ settings.product_quick_buy_background_background | color_modify: 'alpha', 0.1 }};
+    --color-product-card-popup-text: {{ settings.product_quick_buy_background_text }};
+    --color-product-card-popup-borders-forms-primary: {{ settings.product_quick_buy_background_text | color_modify: 'alpha', 0.3 }};
+    --color-product-card-popup-borders-forms-secondary: {{ settings.product_quick_buy_background_text | color_modify: 'alpha', 0.6 }};
+
+    /* Borders */
+
+    --border-radius-buttons: {{ settings.border_radius_buttons_select }}px;
+    --border-width-buttons: {{ settings.border_width_buttons }}px;
+
+    {%- assign border_width_grid_max = settings.border_width_grid | at_most: settings.border_width_sections -%}
+
+    --border-width-grid: {{ border_width_grid_max }}px;
+    --border-radius-grid: {{ settings.border_radius_grid }}px;
+    --border-style-grid: {{ settings.border_style_grid }};
+
+    --border-radius-widgets: var(--border-radius-grid);
+
+    --border-width-sections: {{ settings.border_width_sections }}px;
+    --border-color-sections: {{ settings.border_color_sections }};
+    --border-style-sections: {{ settings.border_style_sections }};
+
+    --border-width-container: {{ settings.border_width_container }}px;
+    --border-color-container: {{ settings.border_color_container }};
+    --border-style-container: {{ settings.border_style_container }};
+
+    --border-width-difference: 0px;
+    --border-style-difference: {%- liquid
+      if settings.border_style_grid == 'solid'
+        echo border_width_grid_max
+      else
+        echo "0"
+      endif
+    -%}px;
+
+    --border-width-drawers: {%- liquid
+      if settings.borders_drawers_disabled
+        echo "0"
+      else
+        echo "1"
+      endif
+    -%}px;
+
+    --buttons-text-transform: {%- liquid
+      if settings.buttons_transform_uppercase
+        echo "uppercase"
+      else
+        echo "none"
+      endif
+    -%};
+
+    /* Layout */
+    
+    --container-vertical-space-base: {{ settings.container_vertical_space }}px;
+
+    --page-padding-base-horizontal: {{ settings.page_padding_horizontal }}px;
+    --page-padding-base-vertical: {{ settings.page_padding_vertical }}px;
+    --grid-padding-base: {{ settings.grid_padding }}px;
+
+  }
+
+  {%- if settings.border_radius_grid > 20 -%}
+    @media screen and (max-width: 767px) {
+      :root {
+        --border-radius-grid: 20px;
+      }
+    }
+  {%- endif -%}
+  {%- if settings.product_card_border_radius_grid > 20 and settings.product_card_remove_padding != true -%}
+    @media screen and (max-width: 767px) {
+      .product-item {
+        --border-radius-grid: 20px !important;
+      }
+    }
+  {%- endif -%}
+
+  .facets--horiz .facets__summary, #main select, .modal select {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="none" height="10" viewBox="0 0 16 10" width="16" xmlns="http://www.w3.org/2000/svg"><g fill="{{ settings.color_scheme_container.settings.text | url_encode }}"><path d="m15.071 2.17151-7.07102 7.07107-1.41422-1.41422 7.07104-7.071065z"/><path d="m2.34314.757385 7.07107 7.071065-1.41422 1.41422-7.071064-7.07107z"/></g></svg>');
+  }
+
+  {%- if settings.enable_quick_buy -%}
+    .product-item__variants-card select {
+      background-image: url('data:image/svg+xml;utf8,<svg fill="none" height="12" viewBox="0 0 20 12" width="20" xmlns="http://www.w3.org/2000/svg"><g fill="{{ settings.product_quick_buy_background_text | url_encode }}"><path d="m19.8994 2.10074-9.89945 9.89946-1.41421-1.4142 9.89946-9.899477z"/><path d="m1.5148.686528 9.8995 9.899472-1.41435 1.4142-9.899364-9.89946z"/></g></svg>') !important;
+    }
+  {%- endif -%}
+
+  .star-rating__stars {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="none" height="19" viewBox="0 0 20 19" width="20" xmlns="http://www.w3.org/2000/svg"><path d="m10 1.61804 1.7696 5.4463.1123.34549h.3632 5.7266l-4.6329 3.36597-.2939.2136.1123.3454 1.7696 5.4464-4.6329-3.366-.2939-.2136-.29389.2136-4.63291 3.366 1.76962-5.4464.11225-.3454-.29389-.2136-4.6329-3.36597h5.72658.36327l.11226-.34549z" stroke="{{ settings.color_scheme_container.settings.text | url_encode }}"/></svg>');
+  }
+  .star-rating__stars-active {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="none" height="19" viewBox="0 0 20 19" width="20" xmlns="http://www.w3.org/2000/svg"><path d="m10.0001 0 2.2451 6.90983h7.2654l-5.8778 4.27047 2.2451 6.9099-5.8778-4.2705-5.87789 4.2705 2.24514-6.9099-5.877848-4.27047h7.265428z" fill="{{ settings.color_scheme_container.settings.text | url_encode }}"/></svg>');
+  }
+
+  sidebar-drawer {
+    --color-scheme-background: {{ settings.color_scheme_drawers.settings.background }};
+    --color-scheme-borders: {{ settings.color_scheme_drawers.settings.borders }};
+    --color-scheme-text: {{ settings.color_scheme_drawers.settings.text }};
+    --color-scheme-text-foreground: {{ settings.color_scheme_drawers.settings.background }};
+    --color-scheme-accent: {{ settings.color_scheme_drawers.settings.accent }};
+    --color-scheme-accent-foreground: {{ settings.color_scheme_drawers.settings.accent_foreground }};
+    --color-borders-main: {{ settings.color_scheme_drawers.settings.text | color_modify: 'alpha', 0.15 }};
+    --color-borders-forms-primary: {{ settings.color_scheme_drawers.settings.text | color_modify: 'alpha', 0.3 }};
+    --color-borders-forms-secondary: {{ settings.color_scheme_drawers.settings.text | color_modify: 'alpha', 0.6 }};
+    --color-opacity-background-main: {{ settings.color_scheme_drawers.settings.background | color_modify: 'alpha', 0 }};
+    --color-secondary-background-main: {{ settings.color_scheme_drawers.settings.text | color_modify: 'alpha', 0.08 }};
+    --color-third-background-main: {{ settings.color_scheme_drawers.settings.text | color_modify: 'alpha', 0.04 }};
+  }
+  sidebar-drawer select {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="none" height="10" viewBox="0 0 16 10" width="16" xmlns="http://www.w3.org/2000/svg"><g fill="{{ settings.color_scheme_drawers.settings.text | url_encode }}"><path d="m15.071 2.17151-7.07102 7.07107-1.41422-1.41422 7.07104-7.071065z"/><path d="m2.34314.757385 7.07107 7.071065-1.41422 1.41422-7.071064-7.07107z"/></g></svg>');
+  }
+  sidebar-drawer .alert {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="none" height="29" viewBox="0 0 29 29" width="29" xmlns="http://www.w3.org/2000/svg"><circle cx="14.5" cy="14.5" fill="{{ settings.color_scheme_drawers.settings.text | url_encode }}" r="14.5"/><path d="m16.1429 13.4293-.8134 4.2169h-1.4961l-.8334-4.2169v-5.4293h3.1429zm-.0804 5.4792v3.0915h-2.9922v-3.0915z" fill="{{ settings.color_scheme_drawers.settings.background | url_encode }}"/></svg>');
+  }
+  
+</style>
+
+<style id="root-height">
+  :root {
+    --window-height: 100vh;
+  }
+</style>
+
+<style id="header-border-width">
+  :root {
+    --border-width-header: {{ settings.border_width_sections }}px;
+  }
+</style>
+
+{%- if settings.section_titles_mobile_size != "1" -%}
+  <style type="text/css">
+    @media screen and (max-width: 767px) {
+      .section-heading {
+        --font-mobile-corrector: {{ settings.section_titles_mobile_size }};
+      }
+    }
+  </style>
+{%- endif -%}
+
+{%- if settings.page_titles_mobile_size != "1" -%}
+  <style type="text/css">
+    @media screen and (max-width: 767px) {
+      .page-heading__title {
+        --font-mobile-corrector: {{ settings.page_titles_mobile_size }};
+      }
+    }
+  </style>
+{%- endif -%}

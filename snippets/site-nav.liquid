@@ -1,0 +1,291 @@
+{%- liquid
+
+	unless type == 'sidebar'
+
+		if submenu_layout == 'fourth'
+			assign font_size_large = 'text-size--30'
+			assign text_animation_helper = ''
+		else
+			assign font_size_large = 'text-size--80'
+			assign text_animation_helper = 'text-animation--underline-huge'
+		endif 
+
+		if weight == true
+			assign font_size_large = font_size_large | append: ' text-weight--bold'
+		endif
+
+		if emphasis == 'em-title'
+			assign submenu_title_class = font_size_large
+			assign submenu_item_class = 'text-size--18 text-weight--normal'
+			assign submenu_title_link_class = text_animation_helper
+		else 
+			assign submenu_title_class = 'text-size--18 text-weight--normal'
+			assign submenu_item_class = font_size_large
+			assign submenu_subtitle_link_class = text_animation_helper
+		endif
+
+	endunless
+
+-%}
+
+{%- for link in linklists[linklist].links -%}
+
+	<li 
+		{% if link.links != blank %}
+			class="top-level-link has-submenu submenu-is-mega-menu" aria-controls="SiteNavLabel-{{ link.handle }}-{{ type }}" aria-expanded="false" 
+		{% else %} 
+			class="top-level-link"
+		{% endif %}
+		id="menu-item-{{ link.handle }}-{{ type }}"
+	>
+
+		<a class="menu-link 
+			{% if link.active or link.child_active %} active {% endif %} 
+			{% unless link.links != blank %} no-focus-link {% endunless %}
+			{% if type == 'sidebar' %} link-arrow {% endif %}"
+		href="{{ link.url }}">
+
+			{%- if type == 'sidebar' -%}
+				<span class="link-arrow__icon">{%- render 'theme-symbols', icon: 'arrow' -%}</span>
+			{%- endif -%}
+
+			<span 
+				{% if type == 'sidebar' %}  class="link-arrow__text" {% endif %}
+			>
+				<span class="text-animation--underline {{ text_animation_class }}">{{ link.title | escape }}</span>
+				{%- if link.links != blank and type == 'sidebar' -%}
+					<span class="icon">{%- render 'theme-symbols', icon: 'plus-thin' -%}</span>
+				{%- endif -%}
+			</span>
+
+			{%- if link.links != blank and type == 'classic' -%}
+				<span class="icon">{%- render 'theme-symbols', icon: 'chevron' -%}</span>
+			{%- endif -%}
+
+		</a>
+
+		{% if link.links != blank %}
+
+			{%- liquid
+				assign promotion_block_1 = blank
+				assign promotion_block_2 = blank
+			-%}
+
+			{%- for block in blocks -%}
+
+				{%- if block.settings.menu_handle == link.handle -%}
+
+					{%- liquid
+						if block.settings.show_promotion_1 or block.settings.show_promotion_2
+							if submenu_layout contains 'fourth'
+								assign sizes = '25vw'
+							elsif submenu_layout contains 'half'
+								if block.settings.show_promotion_1 and block.settings.show_promotion_2
+									assign sizes = '25vw'
+								else 
+									assign sizes = '50vw'
+								endif
+							endif
+							assign sizes = sizes | prepend: 'sizes="(max-width: 1023px) 380px, ' | append: '"'
+						endif
+					-%}
+
+					{%- if block.settings.show_promotion_block_1 -%}
+						{%- capture promotion_block_1 -%}
+							<li class="mega-link card has-promotion">
+								<div class="menu-promotion">
+  
+									{% if block.settings.promotion_image_link_1 != blank %} <a href="{{ block.settings.promotion_image_link_1 }}" {% else %} <div {% endif %}
+										class="menu-promotion-background-image"
+										style="padding-top: {{ 100 | divided_by: block.settings.promotion_image_1.aspect_ratio }}%"
+									>
+										{%- liquid
+											unless block.settings.promotion_image_1 == blank 
+												if block.settings.promotion_image_link_1 != blank 
+													assign add_hover_animation = true
+												endif
+												render 'lazy-image', type: 'background', image: block.settings.promotion_image_1, sizes: sizes, hover_animation: add_hover_animation
+											endunless
+										-%}
+									{%- if block.settings.promotion_image_link_1 != blank -%} </a> {%- else -%} </div> {%- endif -%}
+		
+									{%- unless block.settings.promotion_content_1 == empty -%}
+										<div class="menu-promotion-content gutter-top--small text-size--30 rte remove-empty-space">
+											{{ block.settings.promotion_content_1 | escape }}
+										</div>
+									{%- endunless -%}
+		
+									{%- unless block.settings.promotion_image_button_label_1 == blank -%}
+										<div class="gutter-top--small">
+											{%- render 'button', label: block.settings.promotion_image_button_label_1, link: block.settings.promotion_image_button_link_1, target: block.settings.promotion_image_button_target_1, style: 'outline-arrow', class: 'button--medium' -%}
+										</div>
+									{%- endunless -%}
+
+								</div>
+							</li>
+						{%- endcapture -%}
+					{%- endif -%} 
+
+					{%- if block.settings.show_promotion_block_2 -%}
+						{%- capture promotion_block_2 -%}
+							<li class="mega-link card has-promotion">
+								<div class="menu-promotion">
+
+									{% if block.settings.promotion_image_link_2 != blank %} <a href="{{ block.settings.promotion_image_link_2 }}" {% else %} <div {% endif %}
+										class="menu-promotion-background-image"
+										style="padding-top: {{ 100 | divided_by: block.settings.promotion_image_2.aspect_ratio }}%"
+									>
+										{%- liquid
+											unless block.settings.promotion_image_2 == blank 
+												if block.settings.promotion_image_link_1 != blank 
+													assign add_hover_animation = true
+												endif
+												render 'lazy-image', type: 'background', image: block.settings.promotion_image_2, sizes: sizes, hover_animation: add_hover_animation
+											endunless
+										-%}
+									{%- if block.settings.promotion_image_link_2 != blank -%} </a> {%- else -%} </div> {%- endif -%}
+		
+									{%- unless block.settings.promotion_content_2 == empty -%}
+										<div class="menu-promotion-content gutter-top--small rte text-size--30 remove-empty-space">
+											{{ block.settings.promotion_content_2 | escape }}
+										</div>
+									{%- endunless -%}
+		
+									{%- unless block.settings.promotion_image_button_label_2 == blank -%}
+										<div class="gutter-top--small">
+											{%- render 'button', label: block.settings.promotion_image_button_label_2, link: block.settings.promotion_image_button_link_2, target: block.settings.promotion_image_button_target_2, style: 'outline-arrow', class: 'button--medium' -%}
+										</div>
+									{%- endunless -%}
+
+								</div>
+							</li>
+						{%- endcapture -%}
+					{%- endif -%} 
+
+				{%- endif -%}
+			{%- endfor -%}
+
+			<ul class="submenu mega-menu 
+			" id="SiteNavLabel-{{ link.handle }}-{{ type }}-submenu">
+				
+				<div class="submenu-holder
+					{% if promotion_block_1 != blank or promotion_block_2 != blank %} submenu-holder--promotion-width-{{ submenu_layout }} {% endif %}
+      		{% if promotion_block_1 != blank and promotion_block_2 != blank %} submenu-holder--promotion-both {% endif %}
+				">
+
+					<div class="submenu-masonry 
+						{% if promotion_block_1 != blank or promotion_block_2 != blank %} 
+							with-promotion column-size--{{ submenu_layout }}
+							{% if promotion_block_1 != blank and promotion_block_2 != blank %} 
+								column-size--both
+							{% endif %}
+						{% else %} 
+							without-promotion column-size--{{ submenu_layout }}
+						{% endif %}"
+						style="background:transparent"
+						data-columns="{%- liquid
+							if promotion_block_1 != blank or promotion_block_2 != blank
+								if submenu_layout == 'fourth'
+									if promotion_block_1 != blank and promotion_block_2 != blank
+										echo '2'
+									else
+										echo '3'
+									endif
+								else
+									if promotion_block_1 != blank or promotion_block_2 != blank
+										echo '1'
+									else 
+										echo '2'
+									endif
+								endif
+							else
+								if submenu_layout == 'half'
+									echo '2'
+								else
+									echo '4'
+								endif
+							endif
+						-%}"
+					>
+
+						{%- if type == 'sidebar' -%}
+							<li class="submenu-back">
+								<a tabindex="0" href="#" data-no-instant>
+									<span class="icon">{%- render 'theme-symbols', icon: 'arrow' -%}</span>
+									<span class="text-animation--underline {{ text_animation_class }}">{{ 'general.accessibility_labels.back' | t }}</span>
+								</a>
+							</li>
+						{%- endif -%}
+
+						{%- for childlink in link.links -%}
+
+							<li class="mega-link 
+								{% unless type == 'sidebar' %} card {% endunless %}
+								{% if childlink.links != blank %} has-babymenu {% endif %}
+							">
+
+								<a class="menu-link link-arrow
+									{% if childlink.active or childlink.child_active %} active {% endif %} 
+									{% unless childlink.links != blank %} no-focus-link {% endunless %} 
+									{{ submenu_title_class }}
+								" 
+									{% if childlink.url != '#' or type == 'sidebar' %} href="{{ childlink.url }}" {% endif %}
+								>
+									<!--<span>-->
+									<span class="link-arrow__icon">{%- render 'theme-symbols', icon: 'arrow' -%}</span>
+									<span class="link-arrow__text">
+										<span class="{% if childlink.url != '#' or type == 'sidebar' %}text-animation--underline {{ text_animation_class }} {{ submenu_title_link_class }} {% endif %}">
+											{{ childlink.title | escape }}
+										</span>
+										{%- if childlink.links != blank and type == 'sidebar' -%}
+											<span class="icon">
+												{%- render 'theme-symbols', icon: 'plus-thin' -%}
+											</span>
+										{%- endif -%}
+									<!--</span>-->
+								</span></a>
+
+								{%- if childlink.links != blank -%}
+									<div class="babymenu">
+										<ul id="SiteNavLabel-{{ childlink.handle }}-{{ type }}-babymenu">
+
+											{%- if type == 'sidebar' -%}
+												<li class="submenu-back">
+													<a tabindex="0" href="#" data-no-instant>
+														<span class="icon">{%- render 'theme-symbols', icon: 'arrow' -%}</span>
+														<span class="text-animation--underline {{ text_animation_class }}">{{ 'general.accessibility_labels.back' | t }}</span>
+													</a>
+												</li>
+											{%- endif -%}
+
+											{%- for babylink in childlink.links -%}
+												<li><a class="menu-link link-arrow
+													{% if babylink.active %} active {% endif %} no-focus-link {{ submenu_item_class }}
+												" href="{{ babylink.url }}"><span>
+													<span class="link-arrow__icon">{%- render 'theme-symbols', icon: 'arrow' -%}</span>
+													<span class="link-arrow__text"><span class="text-animation--underline {{ text_animation_class }} {{ submenu_subtitle_link_class }}">{{ babylink.title | escape }}</span></span>
+												</span></a></li>
+											{%- endfor -%}
+
+										</ul>
+									</div>
+								{%- endif -%}
+
+							</li>
+
+						{%- endfor -%}
+
+					</div>
+
+					{{ promotion_block_1 }}
+					{{ promotion_block_2 }}
+
+				</div>
+
+			</ul>
+
+		{%- endif -%}
+
+	</li>
+
+{%- endfor -%}

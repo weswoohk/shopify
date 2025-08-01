@@ -1,0 +1,12 @@
+<product-quantity class="product-quantity quantity-selector-holder 
+  {% if default_to_first_variant %} hide {% endif %}"
+>
+  <button class="qty-button qty-minus no-js-hidden" aria-label="{{ 'general.accessibility_labels.decrease_quantity' | t }}" role="button" controls="qty-{{ id }}">
+    {%- render 'theme-symbols', icon: 'minus' -%}
+  </button>
+  <label for="qty-{{ id }}" class="visually-hidden">{{ 'general.accessibility_labels.quantity' | t }}</label>
+  <input type="number" name="quantity" value="1" min="1" max="999" class="qty qty-selector product__quantity" id="qty-{{ id }}">
+  <button class="qty-button qty-plus no-js-hidden" aria-label="{{ 'general.accessibility_labels.increase_quantity' | t }}" role="button" controls="qty-{{ id }}">
+    {%- render 'theme-symbols', icon: 'plus' -%}
+  </button>
+</product-quantity>

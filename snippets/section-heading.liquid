@@ -1,0 +1,42 @@
+{%- unless heading == blank and navigation == blank -%}
+
+  {%- liquid
+    if heading_is_translation == true
+      assign heading = heading | t
+    endif 
+  -%}
+  
+  <div class="section-heading 
+    {% unless hide_border %} element--has-grid-borders {% endunless %} 
+    gutter-top--{{ settings.section_titles_padding_top }} 
+    gutter-bottom--{{ settings.section_titles_padding_bottom }}
+    {% if heading == blank and navigation != blank and settings.nav_in_heading %} section-heading--nav-only {% endif %}
+  ">
+      
+    {%- unless heading == blank -%}
+      <div class="section-heading__text remove-empty-space">
+        {%- unless heading == blank -%}
+          <{{ seo_h_tag }} class="section-heading__title {{ settings.section_titles_font }} 
+            {% if settings.section_titles_inner_pages and template != 'index' %}
+              {{ settings.section_titles_inner_size }}
+            {% else %} 
+              {{ settings.section_titles_size }} 
+            {% endif %}
+            {{ section.settings.section_titles_line_height }}
+            {% if settings.section_title_bold %} text-weight--bold {% endif %}
+            {% if settings.section_title_italic %} text-style--italic {% endif %}
+          ">{{ heading | escape | newline_to_br }}{{ heading_append }}</{{ seo_h_tag }}>
+        {%- endunless -%}
+      </div>
+    {%- endunless -%}
+
+    {%- unless navigation == blank or settings.nav_in_heading == false -%}
+      <css-slider-navigation data-slider-id="{{ navigation }}" class="css-slider-prev-next">
+        <div class="go go--prev" data-js-slider-prev><span class="visually-hidden">{{ 'general.accessibility_labels.previous' | t }}</span> {% render 'theme-symbols' icon: 'arrow' %}</div>
+        <div class="go go--next" data-js-slider-next><span class="visually-hidden">{{ 'general.accessibility_labels.next' | t }}</span> {% render 'theme-symbols' icon: 'arrow' %}</div>
+      </css-slider-navigation>
+    {%- endunless -%}
+  
+  </div>
+
+{%- endunless -%}

@@ -1,0 +1,53 @@
+{%- unless settings.gift_wrap_product == blank -%}
+          
+  <div id="cart-wrapping" class="cart-wrapping {{ class }}">
+
+    {%- liquid 
+      for item in cart.items
+        if item.product_id == settings.gift_wrap_product.id
+          assign checked = 'checked'
+        endif
+      endfor
+    -%}
+
+    <input data-js-cart-wrapping-checkbox type="checkbox" {{ checked }} class="styled-checkbox" id="cart-gift-wrapping" />
+    <label for="cart-gift-wrapping">{{ settings.gift_wrap_heading | escape }}</label>
+
+    {%- assign product = settings.gift_wrap_product -%}
+    <div style="display:none !important">
+      <quick-add-to-cart class="quick-add-to-cart">
+        <product-form {% if settings.cart_action == 'overlay' %} data-ajax-cart {% endif %}>
+          <div class="quick-add-to-cart-button">
+            {%- form 'product', product -%}
+              <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+              <button class="add-to-cart button button--small button--outline--hover-accent button--loader" type="submit" name="add" data-js-product-add-to-cart>
+                <span class="button__text">
+                  {{ 'cart.quick_view_product' | t }}
+                </span>
+                <span class="button__loader">{{ 'products.grid.loading' | t }}</span>
+              </button>
+            {%- endform -%} 
+          </div>
+        </product-form>
+      </quick-add-to-cart>
+    </div>
+
+    <script>
+      const cartWrappingForm = document.getElementById('cart-wrapping');
+      document.querySelector('[data-js-cart-wrapping-checkbox]').addEventListener('click', e=>{
+        if ( document.getElementById('site-cart-sidebar') ) {
+          document.querySelector('#site-cart-sidebar .sidebar__container').scrollTo({top: 0, behavior: 'smooth'});
+        } 
+        if ( e.target.checked ) {
+          cartWrappingForm.querySelector('[data-js-product-add-to-cart]').click();
+        } else {
+          if ( document.querySelector('.cart-item--gift-wrapping') ) {
+            document.querySelector('.cart-item--gift-wrapping .remove').click();
+          }
+        }
+      })
+    </script>
+
+  </div>
+  
+{%- endunless -%}

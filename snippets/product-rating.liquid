@@ -1,0 +1,126 @@
+{%- liquid
+
+  assign rating = 0
+  assign reviews_count = 0
+
+  if settings.reviews_app == "stamped" or settings.reviews_app == "ali" or settings.reviews_app == "yotpo"
+    assign custom_widget = settings.reviews_app
+  elsif settings.reviews_app == "rapid"
+    assign rating = product.metafields.rapid_reviews.counts.value.r.rating.avg
+    assign reviews_count = product.metafields.rapid_reviews.counts.value.r.counts.core.total
+  elsif settings.reviews_app == "loox"
+    assign rating = product.metafields.loox.avg_rating
+    assign reviews_count = product.metafields.loox.num_reviews
+  elsif settings.reviews_app == "judgeme"
+    assign rating = product.metafields.reviews.rating.value.rating | plus: 0
+    assign reviews_count = product.metafields.reviews.rating_count | plus: 0
+  elsif settings.reviews_app == "air"
+    assign rating = product.metafields.air_reviews_product.review_avg
+    assign reviews_count = product.metafields.air_reviews_product.review_count
+  else
+    if product.metafields.reviews.rating.value != blank
+      assign rating = product.metafields.reviews.rating.value.rating
+      assign reviews_count = product.metafields.reviews.rating_count 
+    endif
+  endif
+
+-%}
+
+{%- if custom_widget == blank -%}
+
+  {%- if type == 'compact' and rating != 0 and rating != blank -%}
+
+    <span class="product-item__rating star-rating--compact" 
+      data-desktop-display="{{ settings.reviews_badge_desktop }}" 
+      data-mobile-display="{{ settings.reviews_badge_mobile }}"
+      style="--badge-color: {{ settings.reviews_badge_color }};--badge-border: {{ settings.reviews_badge_color | color_modify: 'alpha', 0.16 }}"
+    >
+      <span class="star-rating--compact_icon" aria-hidden="true">
+        {%- render 'theme-symbols', icon: 'star', fill: settings.product_card_badge_regular_text_color -%}
+      </span>
+      <span class="star-rating--compact_text text-size--16" aria-hidden="true">
+        {{ rating | round: 1 }}
+      </span>
+    </span>
+
+  {%- elsif type == 'full' -%}
+
+    {%- liquid
+
+      assign rating_decimal = 0
+      assign decimal = rating | modulo: 1
+      if decimal >= 0.3 and decimal <= 0.7
+        assign rating_decimal = 0.5
+      elsif decimal > 0.7
+        assign rating_decimal = 1
+      endif
+
+      if reviews_count > 0
+        assign no_reviews = false
+      endif
+
+      assign scale_max = 5
+      assign active_stars_shown = rating | floor | plus: rating_decimal | times: 100 | divided_by: scale_max
+
+    -%}
+
+    <div class="star-rating">
+
+      <span class="visually-hidden">
+        {%- liquid
+          unless no_reviews 
+            echo 'general.accessibility_labels.rating_info' | t: rating_value: rating, rating_max: scale_max
+          else 
+            echo 'products.page.reviews_count.none' | t
+          endunless
+        -%}
+      </span>
+        
+      <span class="star-rating__stars" style="
+        width:{{ scale_max | times: 20 }}px;
+      ">
+        <span class="star-rating__stars-active" style="width:{{ active_stars_shown }}%"></span>
+      </span>
+      
+      <span class="star-rating__caption">
+        {%- unless no_reviews -%}
+          <span class="star-rating__caption-rating"><span class="text-weight--bold">{{ rating | round: 1 }}</span> / 5.0</span>
+          <span class="star-rating__caption-reviews">(
+            {%- liquid
+              if reviews == 1 
+                echo 'products.page.reviews_count.one' | t
+              else 
+                echo 'products.page.reviews_count.other' | t: count: reviews_count
+              endif
+            -%}
+          )</span>
+        {%- else -%}
+          {{ 'products.page.reviews_count.none' | t }}
+        {%- endunless -%}
+      </span>
+    </div>
+
+  {%- endif -%}
+
+{%- else -%}
+
+  <span class="star-rating__custom">
+
+    {%- if custom_widget == "stamped" -%}
+      <span 
+        class="stamped-product-reviews-badge" 
+        data-id="{{ product.id }}"
+        data-product-sku="{{ product.handle }}" 
+        data-product-type="{{ product.type }}" 
+        data-product-title="{{ product.title }}" 
+        style="display:block;">
+      </span>
+    {%- elsif custom_widget == "ali" -%}
+      <div product-id="{{ product.id }}" product-handle="{{ product.handle }}" class="alireviews-review-star-rating"></div>
+    {%- elsif custom_widget == "yotpo" -%}
+      <div class="yotpo bottomLine" data-product-id="{{ product.id }}"></div>
+    {%- endif -%}
+
+  </span>
+
+{%- endif -%}

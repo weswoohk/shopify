@@ -1,0 +1,128 @@
+{%- assign date_format = 'general.date_format.month_day_year' | t -%}
+
+<div class="card card--hover blog-item js-slider-item spacing--large remove-empty-space"> 
+
+{%- if block_style == "list" -%}
+  <sticky-image-block class="sticky-image-block">
+{%- endif -%}
+
+  <div class="card__hover"></div>
+
+  {%- if show_image -%}
+    <div class="blog-item__image card__image {% if block_style == 'list' %} is-sticky {% endif %}">
+      <a href="{{ article.url }}" title="{{ article.title | escape }}">
+        {%- liquid
+          if article.image == blank
+            assign no = index | modulo: 3 | plus: 1
+            echo 'blog-apparel-X' | replace: 'X', no | placeholder_svg_tag
+          else
+            assign sizes = 'sizes="(max-width: 1023px) 190px, 260px"'
+            if section.index == 1 and index <= 4 and section.location == 'template'
+              assign preload = true
+            else
+              assign preload = false
+            endif
+            render 'lazy-image', image: article.image.src, alt: article.title, sizes: sizes, ratio: 1, preload: preload, hover_animation: true
+          endif
+        -%}
+      </a>
+    </div>
+  {%- endif -%}
+
+  <div class="blog-item__text spacing--large remove-empty-space">
+    {%- if show_tags -%}
+      <div class="blog-item__tags" {{ block.shopify_attributes }}>
+        {%- unless blank_article or article.tags.size == 0 -%}
+          {%- for tag in article.tags limit: section.settings.tags_limit -%}
+            <a class="button button--small button--outline--hover-accent" href="{{ blog_url }}/tagged/{{ tag.handle }}"><span class="button__text">{{ tag | escape }}</span></a>
+          {%- endfor -%}
+        {%- else -%}
+          <span class="button button--small button--outline--hover-accent">Tag</span>
+          <span class="button button--small button--outline--hover-accent">Tag</span>
+        {%- endunless -%}
+      </div>
+    {%- endif -%}
+
+    <div class="blog-item__title-holder" {{ block.shopify_attributes }}>
+      
+      {%- if direction_label -%}
+        <a href="{{ article.url }}" title="{{ article.title | escape }}" class="blog-item__direction-label">
+          {%- liquid
+            if direction_label contains 'prev'
+              render 'theme-symbols' icon: 'arrow-left'
+            endif
+
+            echo direction_label | t
+
+            if direction_label contains 'next'
+              render 'theme-symbols' icon: 'arrow-right'
+            endif
+          -%}
+        </a>
+      {%- endif -%}
+
+      <a href="{{ article.url }}" title="{{ article.title | escape }}">
+        <span class="text-animation--underline text-size--40 text-line-height--small">
+          {%- liquid
+            unless blank_article
+              echo article.title | escape
+            else
+              echo 'general.onboarding.article_title' | t
+            endunless
+          -%}
+        </span>
+      </a>
+    </div>
+
+    <div class="blog-item__meta" {{ block.shopify_attributes }}>
+
+      {%- if show_date -%}
+        <span class="blog-item__date text-size--18">
+          {%- liquid 
+            unless blank_article
+              echo article.published_at | date: date_format 
+            else 
+              echo 'Feb 28 2020' | date: date_format
+            endunless
+          -%}
+        </span>
+      {%- endif -%}
+
+      {%- if show_comments -%}
+        <span class="blog-item__date text-size--18">
+          {%- liquid
+            unless blank_article
+              echo 'blog.grid.comments_count' | t: count: article.comments_count
+            else
+              echo 'general.onboarding.seven_comments' | t
+            endunless
+          -%}
+        </span>
+      {%- endif -%}
+
+      {%- if show_author -%}
+        <span class="blog-item__author text-size--18">
+          {%- liquid
+            unless blank_article
+              echo article.author | escape
+            else  
+              echo 'general.onboarding.author_name' | t
+            endunless 
+          -%}
+        </span>
+      {%- endif -%}
+
+    </div>
+
+    {%- if show_excerpt -%}
+      <div class="blog-item__excerpt">
+        {{ article.excerpt_or_content | strip_html | truncatewords: 30, '...' | escape }}
+      </div>
+    {%- endif -%}
+
+  </div>
+  
+</div>
+{%- if block_style == "list" -%}
+  </sticky-image-block>
+{%- endif -%}

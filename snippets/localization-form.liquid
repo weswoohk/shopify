@@ -1,0 +1,76 @@
+{%- liquid 
+  if show_country_selector and localization.available_countries.size > 1
+    assign country_selector = true
+  endif
+  if show_locale_selector and localization.available_languages.size > 1
+    assign locale_selector = true
+  endif
+-%}
+
+{%- if country_selector or locale_selector -%}
+
+  {{ 'component-localization-form.css' | asset_url | stylesheet_tag }}
+  
+  {%- assign formId = 'localization_form-' | append: location -%}
+  {%- form 'localization', id: formId, class: 'localization-form' -%}
+
+    {%- if locale_selector -%}
+      <localization-form class="localization-form__item">
+
+        <span id="lang-heading-{{ location }}" class="localization-form__item-title text-size--16">{{ 'general.accessibility_labels.language_dropdown_label' | t }}</span>
+
+        <input type="hidden" name="locale_code" value="{{ localization.language.iso_code }}" />
+
+        <button class="button button--outline--hover-accent button--medium localization-form__item-button" data-js-localization-form-button aria-expanded="false" aria-controls="lang-list-{{ location }}" data-location="{{ location }}">
+          <span class="button__text">
+            <span class="localization-form__item-text">
+              {{ localization.language.endonym_name | capitalize }}
+            </span>
+            <span class="localization-form__item-symbol" aria-role="img" aria-hidden="true">{%- render 'theme-symbols', icon: 'chevron' -%}</span>
+          </span>
+        </button>
+
+        <div id="lang-list-{{ location }}" class="localization-form__content" data-js-localization-form-content>
+          <ul>
+            {%- for language in localization.available_languages -%}
+              <li class="localization-form__content-item {% if language.iso_code == localization.language.iso_code %}localization-form__content-item--selected{% endif %}" data-js-localization-form-item>
+                <button type="submit" name="locale_code" lang="{{ language.iso_code }}" hreflang="{{ language.iso_code }}" value="{{ language.iso_code }}" {% if language.iso_code == localization.language.iso_code %}aria-current="true"{% endif %}>{{ language.endonym_name | capitalize }}</button>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+
+      </localization-form>
+    {%- endif -%} 
+
+    {%- if country_selector -%}
+      <localization-form class="localization-form__item">
+
+        <span id="currency-heading-{{ location }}" class="localization-form__item-title text-size--16">{{ 'general.accessibility_labels.country_dropdown_label' | t }}</span>
+
+        <input type="hidden" name="country_code" id="CurrencySelector-{{ location }}" value="{{ localization.country.iso_code }}" />
+
+        <button class="button button--outline--hover-accent button--medium localization-form__item-button" data-js-localization-form-button aria-expanded="false" aria-controls="country-list-{{ location }}" data-location="{{ location }}">
+          <span class="button__text">
+            <span class="localization-form__item-text">
+              <span class="localization-form__country">{{ localization.country.name }}</span>
+              <span class="localization-form__currency">{{ localization.country.currency.iso_code }} {{ localization.country.currency.symbol }}</span>
+            </span>
+            <span class="localization-form__item-symbol" aria-role="img" aria-hidden="true">{%- render 'theme-symbols', icon: 'chevron' -%}</span>
+          </span>
+        </button>
+
+        <div id="country-list-{{ location }}" class="localization-form__content" data-js-localization-form-content>
+          <div>
+            <ul data-js-localization-form-insert-helper-content></ul>
+          </div>
+        </div>
+
+      </localization-form>
+    {%- endif -%}
+
+  {%- endform -%}
+  
+  <script src="{{ 'component-localization-form.js' | asset_url }}" defer></script>
+
+{%- endif -%}

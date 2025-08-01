@@ -1,0 +1,50 @@
+{%- liquid 
+
+  assign nav_in_heading_active = settings.nav_in_heading
+
+  if nav_in_heading_active == false and nav_desktop == false
+    assign nav_desktop = true
+  endif
+
+  if nav_desktop == false and nav_in_heading_active or nav_desktop == blank and nav_in_heading_active
+    assign footer_layout = 'section-footer--nav-desktop-hidden'
+  endif
+
+  if nav_mobile == false or nav_mobile == blank
+    assign footer_layout = 'section-footer--nav-mobile-hidden'
+  endif
+
+  unless nav_desktop or nav_in_heading_active == false or nav_mobile
+    assign footer_layout = 'section-footer--cta-only'
+  endunless
+
+  unless cta_label != blank
+    assign footer_layout = 'section-footer--nav-only'
+  endunless
+
+  if nav == blank or nav == false 
+    assign footer_layout = 'section-footer--cta-only'
+  endif
+
+  if nav_desktop == false and nav_in_heading_active and cta_label == blank or nav == blank and cta_label == blank
+    assign footer_visibility = 'element--hide-on-desk'
+  endif
+
+-%}
+
+<div class="section-footer {{ footer_layout }} {{ footer_visibility }}">
+
+  {%- unless cta_label == blank or cta_label == false -%}
+    <div class="section-footer__cta">
+      {%- render 'button', link: cta_url, style: settings.section_footer_button_style, class: settings.section_footer_button_hover, label: cta_label, label_is_translation: cta_label_is_translation, onclick: onclick, type: cta_type, cta_target: cta_target -%}
+    </div>
+  {%- endunless -%}
+
+  {%- if nav != blank -%}
+    <css-slider-navigation data-slider-id="{{ nav }}" class="css-slider-prev-next {% unless nav_desktop %} element--hide-on-desk {% endunless %} {% unless nav_mobile %} element--hide-on-small {% endunless %}">
+      <div class="go go--prev go--{{ settings.section_footer_button_style }} {{ settings.section_footer_button_hover }}" data-js-slider-prev><span class="visually-hidden">{{ 'general.accessibility_labels.previous' | t }}</span> {% render 'theme-symbols' icon: 'arrow' %}</div>
+      <div class="go go--next go--{{ settings.section_footer_button_style }} {{ settings.section_footer_button_hover }}" data-js-slider-next><span class="visually-hidden">{{ 'general.accessibility_labels.next' | t }}</span> {% render 'theme-symbols' icon: 'arrow' %}</div>
+    </css-slider-navigation>
+  {%- endif -%}
+
+</div>

@@ -1,0 +1,61 @@
+<modal-box id="{{ id }}" class="modal" 
+  data-options='{
+    "enabled": {{ enabled }},
+    "show": 0,
+    "appendToBody": {{ append_to_body }},
+    "showOnce": false
+  }'
+  style="display:none"
+  tabindex="-1" role="dialog" aria-modal="true" 
+>
+{%- liquid
+  if subject_is_translation == true
+    assign subject = subject | t
+  else 
+    assign subject = subject | escape
+  endif
+-%}
+  <div class="modal-wrapper modal-wrapper--size-{{ size }}">
+    <div class="modal-content">
+
+        <div class="modal-heading">
+          <div class="modal-heading__text remove-empty-space">
+            <span class="text-weight--bold text-size--30">{{ subject }}</span>
+          </div>
+          <div class="modal-heading__actions">
+            <span class="modal-close" data-js-close>{%- render 'theme-symbols', icon: 'close' -%}</span>
+          </div>
+        </div>
+
+        {%- if content != blank -%}
+
+          <div class="rte remove-empty-space">
+            <div style="overflow-x:auto">{{ content }}</div>
+          </div>
+
+        {%- else -%}
+
+          {%- if message.errors -%}
+            {%- for field in message.errors -%}
+              
+              {%- if field == 'form' -%}
+                {{ message.errors.messages[field] | capitalize }}
+              {%- else -%}
+                <strong>{{ message.errors.translated_fields[field] | capitalize }}</strong>&nbsp;{{ message.errors.messages[field] }}
+              {%- endif -%}
+          
+            {%- endfor -%}
+          
+          {%- else -%}
+
+            {{ message }}
+
+          {%- endif -%}
+
+        {%- endif -%}
+
+    </div>
+  </div>
+
+  <span class="modal-background" data-js-close></span>
+</modal-box>

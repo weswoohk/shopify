@@ -1,0 +1,45 @@
+<div class="card card--hover" {{ shopify_attributes }} data-js-prlx-parent>
+
+	<div class="card__hover"></div>
+
+	<a href="{{ collection.url | escape }}" title="{{ collection.title | escape }}">
+	
+		<div 
+			class="card__image"
+			style="padding-top:{{ 100 | divided_by: section.settings.image_aspect_ratio }}%"
+			data-js-prlx-children
+		>
+			{%- liquid
+				
+				unless image == blank
+					assign collection_image = image
+				else
+					assign collection_image = collection.featured_image
+				endunless
+	
+				unless collection_image == blank 
+					render 'lazy-image', image: collection_image, type: 'background', alt: collection.title, sizes: sizes, ratio: image_aspect_ratio, hover_animation: true, prlx: true
+				else
+					assign no = index | modulo: 4 | plus: 1
+					echo 'collection-apparel-X' | replace: 'X', no | placeholder_svg_tag
+				endunless 
+
+			-%}
+		</div>
+
+		<div class="card__text gutter-top--small text-align--{{ text_alignment }} remove-empty-space">
+      <span>
+			<span class="text-animation--underline text-line-height--small text-weight--bold text-size--{{ text_size }}">
+        {%- liquid
+          unless collection.title == blank
+            echo collection.title | escape
+          else
+            echo 'general.onboarding.collection_title' | t
+          endunless
+        -%}
+			</span></span>
+		</div>
+
+	</a>
+
+</div>

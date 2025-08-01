@@ -1,0 +1,19 @@
+{%- if settings.show_breadcrumb -%}
+            
+  <nav class="breadcrumb text-size--14" role="navigation" aria-label="breadcrumbs">
+
+    <span class="breadcrumb__link"><a href="{{ routes.root_url }}"><span class="text-animation--underline text-animation--underline-small"><span>{{ 'general.breadcrumb.homepage' | t }}</span></span></a></span>
+    <span class="breadcrumb__separator">/</span>
+
+    {%- unless collection -%}
+      <span class="breadcrumb__link"><a href="{{ routes.collections_url }}"><span class="text-animation--underline text-animation--underline-small"><span>{{ 'general.breadcrumb.collections' | t }}</span></span></a></span>
+    {%- else -%}
+      <span class="breadcrumb__link"><a href="{{ collection.url }}"><span class="text-animation--underline text-animation--underline-small"><span>{{ collection.title | escape }}</span></span></a></span>
+    {%- endunless -%}
+
+    <span class="breadcrumb__separator">/</span>
+    <span class="breadcrumb__current">{{ product.title | escape }}</span>
+
+  </nav>
+
+{%- endif -%}

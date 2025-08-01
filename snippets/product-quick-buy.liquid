@@ -1,0 +1,214 @@
+<quick-buy
+  data-add-to-cart-price="{{ add_to_cart_price }}"
+  data-default-to-first-variant="{{ default_to_first_variant }}"
+  class="product-item__variants-card"
+>
+
+  {%- liquid
+
+    assign product_form_id = 'product-form-' | append: id
+    assign current_variant = product.selected_or_first_available_variant
+    assign color_label = settings.color_swatches_labels | split: ','
+
+    if product.has_only_default_variant
+      assign default_to_first_variant_setting = true
+      assign form_class = 'form'
+    else
+      assign default_to_first_variant_setting = false
+      assign form_class = 'form disabled-cart'
+    endif;
+
+  -%}
+
+  <div id="product-price-{{ id }}" data-js-quick-buy-product-price style="display:none">
+    {%- render 'product-price', variant: current_variant, target: current_variant -%}
+  </div>
+
+  <product-variants 
+    data-variants="{{ product.options_with_values.size }}"
+    data-hide-variants="disable"
+    data-url="{{ product.url }}" data-id="{{ id }}"
+    data-style="{{ variants_style }}"
+    data-no-history
+    {% if unavailable_variants == 'hide' %} class="product-variants--hide-unavailable" {% endif %}
+    {% unless default_to_first_variant_setting %} data-variant-required {% endunless %}
+    {% unless product.has_only_default_variant %} data-has-variants {% elsif product.available == false %} data-unavailable {% endunless %}
+  > 
+
+    <div class="product-variants no-js-hidden"
+      {% if product.has_only_default_variant %} style="display:none" {% endif %}
+      {% if product.available == false and unavailable_variants == 'hide' %} style="display:none" {% endif %}
+    >
+
+      {%- for option in product.options_with_values -%}
+
+        {%- assign option_downcased = option.name | downcase -%}
+        
+        <div class="product-variant" data-name="product-{{ option.name | escape | downcase | strip }}-{{ id }}" data-js-product-variant>
+
+          <span class="product-variant__name text-size--18">{{ 'products.grid.select_variant' | t: variant: option_downcased }}</span>
+
+          {%- if color_label contains option_downcased and show_color_swatches -%}
+
+            <css-slider data-options='{
+              "selector": ".product-variant__item",
+              "groupCells": true,
+              "navigation": false,
+              "thumbnails": false,
+              "delayDrag": 300
+            }' class="css-slider css-slider--scrollbars-visible css-slider--no-snap">
+              <div class="product-variant__container product-variant__container--radio" data-js-product-variant-container="radio">
+                {%- for value in option.values -%}
+                  <div class="product-variant__item product-variant__item--radio product-variant__item--color">
+                    <input type="radio" name="product-{{ option.name | escape | downcase | strip }}-{{ id }}" id="{{ product.handle }}-option-{{ option.name | escape | downcase | strip }}-{{ forloop.index }}-{{ id }}" value="{{ value | escape }}" {% if default_to_first_variant_setting and option.selected_value == value %}checked{% endif %} class="product-variant__input product-variant-value">
+                    <label for="{{ product.handle }}-option-{{ option.name | escape | downcase | strip }}-{{ forloop.index }}-{{ id }}" class="product-variant__label">
+                      {%- liquid 
+                        assign color_swatch_name = value | handle | append: '.png'
+                        assign color_swatch_image = images[color_swatch_name]
+                        assign color_swatch_background = value | downcase | escape | replace: ' ', ''
+                      -%}
+                      {%- if color_swatch_image != blank -%}
+                        <img class="product-variant__item-swatch product-variant__item-swatch--color"
+                          src="{{ color_swatch_image | image_url: width: 30, height: 30, crop: 'center' }}"
+                          srcset="
+                            {{ color_swatch_image | image_url: width: 30, height: 30, crop: 'center' }} 30w,
+                            {{ color_swatch_image | image_url: width: 60, height: 60, crop: 'center' }} 60w,
+                            {{ color_swatch_image | image_url: width: 90, height: 90, crop: 'center' }} 90w
+                          "
+                          sizes="30px" width="30" height="30"
+                          loading="lazy"
+                          alt="{{ color_swatch_image.alt | escape }}"
+                        />
+                      {%- else -%}
+                        <span class="product-variant__item-swatch product-variant__item-swatch--image" style="background-color:{{ color_swatch_background }}"></span>
+                      {%- endif -%}
+                      <span class="visually-hidden">{{ value | escape }}</span>
+                    </label>
+                  </div>
+                {%- endfor -%}
+
+              </div>
+            </css-slider>
+
+            <span class="product-variant__item-text-label text-size--14 text-line-height--small">
+              {%- liquid
+                unless default_to_first_variant_setting
+                  echo 'products.grid.color_variants_count' | t: count: option.values.size
+                else
+                  echo option.selected_value
+                endunless
+              -%}
+            </span>
+
+          {%- elsif variants_style == 'select' -%}
+
+            <select class="product-variant__container product-variant__container--select text-size--18" id="product-{{ option.name | escape | downcase | strip }}-{{ id }}" data-js-product-variant-container="select">
+              {%- unless default_to_first_variant_setting -%}
+                <option class="product-variant-value" default selected disabled>{{ 'products.grid.select_variant' | t: variant: option_downcased }}</option>
+              {%- endunless -%}
+              {%- for value in option.values -%}
+                <option class="product-variant-value" value="{{ value | escape }}" {% if default_to_first_variant_setting and option.selected_value == value %}selected{% endif %}>
+                  {{ value | escape }}
+                </option>
+              {%- endfor -%}
+            </select>
+
+          {%- else -%}
+
+          <css-slider data-options='{
+            "selector": ".product-variant__item",
+            "groupCells": true,
+            "navigation": false,
+            "thumbnails": false,
+            "delayDrag": 300
+          }' class="css-slider css-slider--scrollbars-visible css-slider--no-snap">
+            <div class="product-variant__container product-variant__container--radio" data-js-product-variant-container="radio">
+              {%- for value in option.values -%}
+                <div class="product-variant__item product-variant__item--radio">
+                  <input type="radio" name="product-{{ option.name | escape | downcase | strip }}-{{ id }}" id="{{ product.handle }}-option-{{ option.name | escape | downcase | strip }}-{{ forloop.index }}-{{ id }}" value="{{ value | escape }}" {% if default_to_first_variant_setting and option.selected_value == value %}checked{% endif %} class="product-variant__input product-variant-value">
+                  <label for="{{ product.handle }}-option-{{ option.name | escape | downcase | strip }}-{{ forloop.index }}-{{ id }}" class="product-variant__label text-size--14">
+                    {{ value | escape }}
+                  </label>
+                </div>
+              {%- endfor -%}
+            </div>
+          </css-slider>
+
+          {%- endif -%}
+
+        </div>
+
+      {%- endfor -%}
+
+    </div>
+
+    <script type="application/json">
+      {{ product.variants | json }}
+    </script>
+
+  </product-variants>
+
+  <div
+    id="add-to-cart-{{ id }}" class="product-form" 
+    data-js-quick-buy-form
+  >
+    
+    {%- form 'product', product, id: product_form_id, class: form_class, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+
+      <template>
+        <input type="hidden" name="id" value="{{ current_variant.id }}">
+      </template>
+      <script>
+        document.getElementById('add-to-cart-{{ id }}').querySelector('form').append(document.getElementById('add-to-cart-{{ id }}').querySelector('template').content.cloneNode(true));
+      </script>
+
+      <div class="flex-buttons">
+
+        {%- liquid
+          if settings.product_quick_buy_show_quantity_selector
+            render 'product-quantity-selector', product: product, id: id
+          endif
+        -%}
+
+        <button type="submit" name="add" class="add-to-cart button 
+          button--small button--fullwidth button--solid--hover-accent button--loader
+          {% unless current_variant.available %} disabled {% endunless %} 
+          {% unless default_to_first_variant_setting %} disabled {% endunless %}" 
+          data-js-product-add-to-cart
+          style="--button-padding-vertical:12px"
+        >
+          <span class="button__text" data-js-product-add-to-cart-text>
+            {%- liquid
+              if default_to_first_variant_setting
+                if current_variant.available
+                  echo 'products.page.add_to_cart_button' | t
+                  if add_to_cart_price and default_to_first_variant == false
+                    echo current_variant.price | money | prepend: '<span class="button__price"> - ' | append: '</span>' 
+                  endif
+                else
+                  echo 'products.page.inventory.sold_out_variant' | t
+                endif
+              else
+                if product.available
+                  echo 'products.grid.choose_variant_first' | t
+                else
+                  echo 'products.page.inventory.sold_out_variant' | t
+                endif
+              endif
+            -%}
+          </span>
+          <span class="button__loader">{{ 'products.grid.loading' | t }}</span>
+        </button>
+
+      </div>
+
+    {%- endform -%}
+
+  </div>
+
+  <button class="product-item__variants-card-close-button" data-js-close>
+    <span class="visually-hidden">{{ 'general.accessibility_labels.close' | t }}</span>
+    {%- render 'theme-symbols', icon: 'close' -%}
+  </button>
+
+</quick-buy>

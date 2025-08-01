@@ -1,0 +1,29 @@
+{%- if paginate.pages > 1 -%}
+  <nav role="navigation">
+    <div class="pagination">
+      {%- if paginate.previous -%}
+        <a class="pagination__prev go go--prev" href="{{ paginate.previous.url }}" data-instant>
+          <span class="visually-hidden">{{ 'general.accessibility_labels.previous' | t }}</span> {% render 'theme-symbols' icon: 'arrow' %}
+        </a>
+      {%- else -%}
+        <div class="pagination__prev go go--prev disabled">
+          <span class="visually-hidden">{{ 'general.accessibility_labels.previous' | t }}</span> {% render 'theme-symbols' icon: 'arrow' %}
+        </div>
+      {%- endif -%}
+
+      <div class="pagination__from-to">
+        {{ paginate.current_page }} <span class="pagination__line">-</span> {{ paginate.pages }}
+      </div>
+
+      {%- if paginate.next -%}
+        <a class="pagination__prev go go--next" href="{{ paginate.next.url }}" data-instant>
+          <span class="visually-hidden">{{ 'general.accessibility_labels.previous' | t }}</span> {% render 'theme-symbols' icon: 'arrow' %}
+        </a>
+      {%- else -%}
+        <div class="pagination__next go go--next disabled">
+          <span class="visually-hidden">{{ 'general.accessibility_labels.next' | t }}</span> {% render 'theme-symbols' icon: 'arrow' %}
+        </div>
+      {%- endif -%}
+    </div>
+  </nav>
+{%- endif -%}
