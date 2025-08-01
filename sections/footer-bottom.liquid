@@ -1,0 +1,25 @@
+<div class="footer-bottom__content gutter-horiz--regular gutter-top--regular gutter-bottom--regular">
+  {{ 'general.copyright' | t }} &copy; {{ 'now' | date: "%Y" }} <a href="{{ routes.root_url }}">{{ shop.name | escape }}</a>.
+  <span class="powered-by-shopify">{{ powered_by_link }}</span>
+</div>
+
+{%- render 'color-scheme', color_scheme: section.settings.color_scheme -%}
+
+{% schema %}
+  {
+    "name": "t:raw-extra-words.sections.footer-bar.name",
+    "class": "footer-bottom",
+    "settings": [
+      {
+        "type": "color_scheme",
+        "id": "color_scheme",
+        "label": "t:color-schemes.name_singular",
+        "default": "scheme_1"
+      }
+    ],
+    "enabled_on": {
+      "groups": ["footer"],
+      "templates": ["password"]
+    }
+  }
+{% endschema %}

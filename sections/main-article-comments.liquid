@@ -1,0 +1,211 @@
+{%- if blog.comments_enabled? -%}
+
+  {{ 'section-main-article-comments.css' | asset_url | stylesheet_tag }}
+  {{ 'component-modal.css' | asset_url | stylesheet_tag }}
+
+  {%- liquid 
+    assign date_format = 'general.date_format.month_day_year' | t 
+    assign comment_size_limit = section.settings.comments_size_limit
+    if article.comments_count > 0
+      assign slider_id = section.id
+    endif
+  -%}
+
+  {% capture heading_append %}
+    ({{ article.comments_count }})
+  {% endcapture %}
+
+  {%- render 'section-heading', heading: 'blog.article.comments_list_title', heading_append: heading_append, heading_is_translation: true, navigation: slider_id, seo_h_tag: 'h4', hide_border: false, css_class: 'text-size--20' -%}
+
+  <div class="article__comments">
+
+    {%- paginate article.comments by 10 -%}
+
+      {%- if article.comments_count > 0 -%}
+      <css-slider data-options='{
+        "selector": ".comment",
+        "groupCells": true,
+        "autoHeight": false,
+        "navigation": false,
+        "thumbnails": false
+      }'
+        class="css-slider" 
+        id="slider-{{ section.id }}"
+      >
+        <div id="comments" class="grid grid--slider grid-2 grid-portable-1 grid-palm-1 grid--align-items-stretch">
+          {%- for comment in article.comments -%}
+            {%- assign comment_size = comment.content | strip_html | split: ' ' | size -%}
+            {%- assign comment_id = 'coment-' | append: forloop.index -%}
+            <div id="{{ comment.id }}" class="comment has-bg-style--outline">
+
+              <div class="comment__content text-size--16">
+                {{ comment.content | truncatewords: comment_size_limit, "..." }}
+                {% if comment_size > comment_size_limit %}
+                  <span class="comment__read-more text-size--14 text-weight--bold text-decoration--underline element--cursor-pointer" onclick="document.getElementById('{{ comment_id }}').show()">{{ 'general.accessibility_labels.show_more' | t }}</span>
+
+                  
+                {% endif %}
+                
+              </div>
+
+              <div class="comment__info">
+                <span class="comment__author text-size--16 text-weight--bold">{{ comment.author | escape }}</span>
+                <span class="comment__date text-size--14 text-color--opacity">{{ comment.created_at | time_tag: date_format }}</span>
+              </div>
+            </div>
+
+            {%- render 'modal', message: comment.content, subject: comment.author, id: comment_id, enabled: false, size: 50, append_to_body: false -%}
+
+          {%- endfor -%}
+        </div>
+        
+      </css-slider>
+
+      {%- liquid
+        if paginate.pages > 1
+          render 'pagination', paginate: paginate
+        endif
+      -%}
+
+      {%- else -%}
+
+        <div class="no-content-message">
+          {{ 'blog.article.no_comments_message' | t }}
+        </div>
+
+      {%- endif -%}
+
+      {%- render 'section-footer', cta_label: 'blog.article.comments_form_title', cta_url: false, cta_type: 'button', cta_label_is_translation: true, onclick: "document.getElementById('modal-add-comment').show()", nav: slider_id, nav_desktop: false, nav_mobile: true -%}
+
+
+      {%- form 'new_comment', article, class: 'simple-form' -%}
+        {%- liquid 
+          if form.posted_successfully?
+            if blog.moderated?
+              assign message = 'blog.article.comment_under_moderation' | t 
+            else
+              assign message = 'blog.article.comment_posted' | t
+            endif
+            render 'modal', message: message, subject: "general.form.thank_you", id: "modal-message-success", enabled: true, subject_is_translation: true, size: 50, append_to_body: false
+          elsif form.errors
+            render 'modal', message: form, subject: "general.form.warning", id: "modal-message-warning", enabled: true, subject_is_translation: true, size: 50, append_to_body: false
+          endif
+        -%}
+
+        <modal-box id="modal-add-comment" class="modal" 
+          data-options='{
+            "enabled": false,
+            "enableClose": true,
+            "show": 0,
+            "showOnce": false
+          }'
+          style="display:none"
+          tabindex="-1" role="dialog" aria-modal="true" 
+        >
+          
+          <div class="container--compact">
+            <div class="modal-content">
+
+              <div class="modal-heading">
+                <div class="modal-heading__text remove-empty-space">
+                  <span class="text-weight--bold text-size--30">{{ 'blog.article.comments_form_title' | t }}</span>
+                </div>
+                <div class="modal-heading__actions">
+                  <span class="modal-close" data-js-close>{%- render 'theme-symbols', icon: 'close' -%}</span>
+                </div>
+              </div>
+
+              <div id="comments-form" class="comments__form">
+
+
+                <div class="form-field">
+                  <label for="comment-author" class="visually-hidden">{{ 'blog.article.comments_form_name_label' | t }}</label>
+                  <input {% if form.errors contains "author" %} class="error"{% endif %} type="text" name="comment[author]" placeholder="{{ 'blog.article.comments_form_name_label' | t }}" id="comment-author" value="{{ form.author }}" autocapitalize="words" required>
+                </div>
+
+                <div class="form-field">
+                  <label for="comment-email" class="visually-hidden">{{ 'blog.article.comments_form_email_label' | t }}</label>
+                  <input {% if form.errors contains "email" %} class="error"{% endif %} type="email" name="comment[email]" placeholder="{{ 'blog.article.comments_form_email_label' | t }}" id="comment-email" value="{{ form.email }}" autocorrect="off" autocapitalize="off" required>
+                </div>
+                
+                <div class="form-field">
+                  <label for="comment-body" class="visually-hidden">{{ 'blog.article.comments_form_message_label' | t }}</label>
+                  <textarea {% if form.errors contains "body" %} class="error"{% endif %} name="comment[body]" id="comment-body" placeholder="{{ 'blog.article.comments_form_message_label' | t }}" required>{{ form.body }}</textarea>
+                </div>
+
+                <div class="form-field">
+                  {%- render 'button', label: 'blog.article.comments_form_submit_label', link: article.url, label_is_translation: true, is_submit: true, type: 'button', style: 'outline' -%}
+                </div>    
+              
+                {%- if blog.moderated? -%}
+                  <small><em>{{ 'blog.article.comments_notice' | t }}</em></small>
+                {%- endif -%}
+
+                {%- if form.errors -%}
+                  <script>
+                    window.location.hash = '#add-comment';
+                  </script>
+                {%- endif -%}
+
+                {%- if form.posted_successfully? -%}
+                  <script>
+                    window.location.hash = '#comments';
+                  </script>
+                {%- endif -%}
+
+              </div>
+
+            </div>
+          </div>
+
+          <span class="modal-background" data-js-close></span>
+
+        </modal-box>
+
+      {%- endform -%}
+
+    {%- endpaginate -%}
+
+  </div>
+
+  {%- render 'color-scheme', color_scheme: section.settings.color_scheme, hide_section_bottom_border: section.settings.disable_section_bottom_border -%}
+  
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.local-extra-words.sections.main-article-comments.name",
+  "class": "element--has-section-borders",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.local-extra-words.sections.main-article-comments.info"
+    },
+    {
+      "type": "range",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "default": 30,
+      "label": "t:raw-extra-words.settings_schema.labels.comment_size_limit",
+      "id": "comments_size_limit"
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.colors.header_section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:color-schemes.name_singular",
+      "default": "scheme_1"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_section_bottom_border",
+      "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+      "default": false
+    }
+  ]
+}
+{% endschema %}

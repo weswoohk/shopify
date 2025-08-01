@@ -1,0 +1,48 @@
+{{ 'section-account.css' | asset_url | stylesheet_tag }}
+
+{% render 'page-heading', title: 'customers.account_page.title', title_is_translation: true %}
+
+<div class="gutter--grid-padding gutter-top--regular gutter-bottom--regular">
+	<div class="account">
+		
+		<h2 class="text-size--30 text-font--headings text-weight--bold">{{ 'customers.account_activation_page.subtitle' | t }}</h2>
+		
+		<div class="account__form-block ">
+
+			{% form 'activate_customer_password' %}
+
+				{% render 'form-errors', form: form, class: 'simple-form' %}
+
+				<div class="account__form-row">
+					<label for="customer_password" class="hide--force">{{ 'customers.account_activation_page.form_password_label' | t }}</label>
+					<input type="password" value="" name="customer[password]" placeholder="{{ 'customers.account_activation_page.form_password_label' | t }}" id="customer_password">
+				</div>
+
+				<div class="account__form-row">
+					<label for="customer_password_confirmation" class="hide--force">{{ 'customers.account_activation_page.form_password_confirm_label' | t }}</label>
+					<input type="password" value="" name="customer[password_confirmation]" placeholder="{{ 'customers.account_activation_page.form_password_confirm_label' | t }}" id="customer_password_confirmation">
+				</div>
+
+				<div class="form-actions">
+					<div class="gutter-bottom--grid-padding">
+						<button type="submit" class="button button--solid--hover-accent button--fullwidth" ><span class="button__text">{{ 'customers.account_activation_page.form_activate_button' | t }}</span></button>
+					</div>
+					<button type="submit" class="button button--outline--hover-accent button--fullwidth " name="decline" id="customer_decline" ><span class="button__text">{{ 'customers.account_activation_page.form_decline_button' | t }}</span></button>
+				</div>
+
+			</div>
+
+		{% endform %}
+
+	</div>
+
+</div>
+
+{%- render 'color-scheme', color_scheme: blank, hide_section_bottom_border: false -%}
+
+{% schema %}
+  {
+    "name": "t:sections.local-extra-words.sections.customers.activate-account.name",
+    "class": "element--has-section-borders"
+  }
+{% endschema %}

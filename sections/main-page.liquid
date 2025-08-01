@@ -1,0 +1,16 @@
+{%- render 'page-heading', title: page.title -%}
+
+{%- unless page.content == blank -%}
+  <div class="rte gutter-horiz--regular gutter-top--regular gutter-bottom--regular">
+    {{ page.content }}
+  </div>
+{%- endunless -%}
+
+{%- render 'color-scheme', color_scheme: blank, hide_section_bottom_border: false -%}
+
+{% schema %}
+  {
+    "name": "t:sections.main-page.name",
+    "class": "element--has-section-borders"
+  }
+{% endschema %}

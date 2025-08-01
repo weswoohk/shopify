@@ -1,0 +1,94 @@
+<recently-viewed-products class="product-recommendations">
+
+  <template>
+
+    {%- render 'section-heading', heading: section.settings.heading, navigation: section.id, seo_h_tag: 'span', hide_border: section.settings.disable_section_title_border -%} 
+    
+    <css-slider data-options='{
+        "selector": "[data-js-product-item]",
+        "groupCells": true,
+        "navigation": false,
+        "thumbnails": false,
+        "disableMouseDownEvent": false
+      }'
+      class="css-slider"
+      id="slider-{{ section.id }}"
+    >
+      <div class="grid grid--slider {{ settings.recently_viewed_layout_desktop }} 
+        {{ settings.recently_viewed_layout_mobile }}
+        {% if settings.product_card_disable_border %} element--hide-inner-borders {% endif %}
+      "
+      data-js-recently-viewed-products-container
+      ></div>
+
+    </css-slider>
+
+    {%- render 'section-footer', cta_label: false, cta_label_is_translation: false, cta_url: false, nav: section.id, nav_desktop: false, nav_mobile: true -%}
+
+    {%- render 'color-scheme', color_scheme: section.settings.color_scheme, hide_section_bottom_border: section.settings.disable_section_bottom_border -%}
+
+    {%- if settings.parallax_effects or settings.zoom_effects -%}
+      <script>
+        if ( window.prlxPush ) {
+          window.prlxPush(document.querySelectorAll('recently-viewed-products [data-js-prlx-parent]'));
+        } 
+      </script>
+    {%- endif -%}
+
+  </template>
+    
+</recently-viewed-products>
+
+{% schema %}
+  {
+    "name": "t:recently_viewed.recently_viewed_products",
+    "class": "element--has-section-borders mount-css-slider mount-recently-viewed-products",
+    "limit": 1,
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "t:recently_viewed.recently_viewed_products_info"
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.layout_labels.section_heading.label"
+      },
+      {
+        "type": "textarea",
+        "id": "heading",
+        "label": "t:sections.local-extra-words.sections.headings.heading",
+        "default": "Recently viewed products"
+      },
+      {
+        "type": "checkbox",
+        "id": "disable_section_title_border",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_title_border",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.colors.header_section"
+      },
+      {
+        "type": "color_scheme",
+        "id": "color_scheme",
+        "label": "t:color-schemes.name_singular",
+        "default": "scheme_1"
+      },
+      {
+        "type": "checkbox",
+        "id": "disable_section_bottom_border",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+        "default": false
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:recently_viewed.recently_viewed_products"
+      }
+    ],
+    "disabled_on": {
+      "groups": ["header", "custom.drawers", "custom.overlay"]
+    }
+  }
+{% endschema %}

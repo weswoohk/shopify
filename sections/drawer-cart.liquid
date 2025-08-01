@@ -1,0 +1,134 @@
+{%- liquid 
+  unless settings.cart_action == "no-overlay" or template.name contains "cart" 
+    assign show_cart = true
+  elsif request.design_mode
+    assign show_cart = true
+  else 
+    assign show_cart = false
+  endunless
+-%}
+
+{%- if show_cart -%}
+
+  <sidebar-drawer id="site-cart-sidebar" data-direction="right" class="sidebar {% if cart.item_count == 0 %} cart-is-empty {% endif %}" tabindex="-1" role="dialog" aria-modal="true" data-cart-items="{{ cart.item_count }}" style="display:none" data-js-site-cart-sidebar>
+
+    <div class="sidebar__container">
+
+      <div class="sidebar__content">
+      
+        <div class="sidebar__header">
+          <span class="sidebar__title text-size--18 text-weight--bold text-transform--uppercase">
+            {{ 'cart.title' | t }}
+            (<span data-header-cart-count>{{ cart.item_count }}</span>)
+          </span>
+          <button class="sidebar__close" data-js-close>
+            <span class="visually-hidden">{{ 'general.accessibility_labels.close_sidebar' | t }}</span>
+            <span aria-hidden="true" aria-role="img">{%- render 'theme-symbols', icon: 'close-small' -%}</span>
+          </button>
+        </div>
+
+        <div class="sidebar__body">
+
+          <div class="cart-form">
+            {%- render 'cart-form', type: 'sidebar' -%}
+            <div class="cart-continue">
+              {%- render 'button', label: 'cart.continue_shopping', label_is_translation: true, style: 'outline-arrow', type: 'button', attribute: 'data-js-close', class: ' button--small' -%}
+            </div>
+          </div>
+
+          {%- unless section.settings.cart_upsell_product == blank -%}
+            <div class="hide-if-empty-cart">
+              <span class="gutter--sidebar border--sidebar" style="display:block;margin-top:5px">{{ section.settings.cart_upsell_heading | escape }}</span>
+              {%- render 'product-cross-sell', product: section.settings.cart_upsell_product, id: 'cart-individual-product-cross-sell', class: 'cart-individual-product-recommendation', type: 'sidebar' %}
+            </div>
+          {%- endunless -%}
+
+          {%- if settings.cart_notes_enable -%}
+            <div class="cart-instructions hide-if-empty-cart gutter--sidebar {% unless settings.gift_wrap_product == blank %} border--sidebar {% endunless %}"
+              style="margin-top:6px;padding-bottom:18px"
+            >
+              <div class="form-field">
+                <label for="cartSpecialInstructions" class="text-size--16">{{ 'cart.note' | t }}</label>
+                <textarea name="note" id="cartSpecialInstructions" form="cart">{{ cart.note }}</textarea>
+              </div>
+            </div>
+          {%- endif -%}
+
+          {%- render 'cart-gift-wrapping', class: 'cart-wrapping--sidebar' -%}
+
+        </div>
+
+        <div class="sidebar__footer hide-if-empty-cart"
+          data-drawer-actions="{{ section.settings.cart_drawer_actions }}"
+        >
+          {%- render 'cart-subtotal', type: 'sidebar' -%}
+        </div>
+
+      </div>
+
+    </div>
+
+  </sidebar-drawer>
+
+  <script>
+    new MutationObserver((mutations, observer) => {
+      if ( document.getElementById('cart').classList.contains('cart--empty') ) {
+        document.getElementById('site-cart-sidebar').classList.add('cart-is-empty');
+      } else {
+        document.getElementById('site-cart-sidebar').classList.remove('cart-is-empty');
+      }
+    }).observe(document.querySelector('.cart-form'), {
+      attributes: false, childList: true, subtree: true
+    })
+  </script>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:raw-extra-words.drawers.cart.name",
+  "class": "mount-drawer",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:raw-extra-words.drawers.cart.info_1"
+    },
+    {
+      "type": "select",
+      "id": "cart_drawer_actions",
+      "label": "t:raw-extra-words.settings_schema.cart.cart_actions.label",
+      "options": [
+        {
+          "value": "show-view",
+          "label": "t:raw-extra-words.settings_schema.cart.cart_actions.option_1"
+        },
+        {
+          "value": "show-checkout",
+          "label": "t:raw-extra-words.settings_schema.cart.cart_actions.option_2"
+        },
+        {
+          "value": "show-view show-checkout",
+          "label": "t:raw-extra-words.settings_schema.cart.cart_actions.option_3"
+        }
+      ],
+      "default": "show-view show-checkout"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.refactor_words.cart_upsell.name"
+    },
+    {
+      "type": "text",
+      "id": "cart_upsell_heading",
+      "label": "t:sections.product-recommendations.settings.heading.label",
+      "default": "Recommended product"
+    },
+    {
+      "type": "product",
+      "label": "t:sections.refactor_words.cart_upsell.product",
+      "info": "t:sections.refactor_words.cart_upsell.product_info",
+      "id": "cart_upsell_product"
+    }
+  ]
+}
+{% endschema %}

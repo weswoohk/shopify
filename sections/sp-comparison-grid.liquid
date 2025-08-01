@@ -1,0 +1,355 @@
+{% comment %}
+  © Sections Pro. You are free to use this section in your store. You may not redistribute this section in another Shopify app.
+{% endcomment %}
+<style>
+
+  {{ section.settings.text_font | font_face }}
+
+  #sp-comp-{{ section.id }}.sp-comp-wrap div,
+  #sp-comp-{{ section.id }}.sp-comp-wrap p,
+  #sp-comp-{{ section.id }}.sp-comp-wrap th,
+  #sp-comp-{{ section.id }}.sp-comp-wrap td,
+  #sp-comp-{{ section.id }}.sp-comp-wrap a {
+    font-size: {{ section.settings.text_size }}px;
+    font-family: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};
+    font-weight: {{ section.settings.text_font.weight }};
+    line-height: 1.15;
+  }
+
+  @media only screen and (max-width: 800px) {
+    #sp-comp-{{ section.id }}.sp-comp-wrap div,
+    #sp-comp-{{ section.id }}.sp-comp-wrap p,
+    #sp-comp-{{ section.id }}.sp-comp-wrap th,
+    #sp-comp-{{ section.id }}.sp-comp-wrap td,
+    #sp-comp-{{ section.id }}.sp-comp-wrap a {
+      font-size: {{ section.settings.mobile_text_size }}px;
+    }
+  }
+
+  #sp-comp-{{ section.id }}.sp-comp-wrap {
+    background-image: {{section.settings.background_color}};
+    width: 100%;
+  }
+  
+  #sp-comp-{{ section.id }} .sp-comp {
+    position: relative;
+    margin: 0 auto;
+    max-width: {{ section.settings.max_width }}px;
+    padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;
+  }
+
+  #sp-comp-{{ section.id }} .sp-comp h2 {
+    text-align: center;
+    color: {{ section.settings.text_color }};
+    font-weight: bold;
+    max-width: 1000px;
+    margin: 0 auto 25px auto;
+    padding: 0;
+  }
+
+  .sp-comp .sp-comp-grid {
+    position: relative;
+    margin: 0 auto;
+    display: block;
+    max-width: 1000px;
+  }
+
+  .sp-comp-row0, .sp-comp-row {
+    display: grid;
+    grid-template-columns: 3fr 150px 150px;
+    border-bottom: 1px solid {{ section.settings.border_color }};
+    gap: 0;
+  }
+
+  .sp-comp-row0 *, .sp-comp-row * {
+    color: {{ section.settings.text_color }};
+  }
+
+  @media only screen and (max-width: 800px) {
+    .sp-comp-row0, .sp-comp-row {
+      display: grid;
+      grid-template-columns: 3fr 100px 100px;
+      border-bottom: 1px solid {{ section.settings.border_color }};
+      gap: 0;
+    }
+  }
+
+  .sp-comp-row0>div, .sp-comp-row>div {
+    padding: {{ section.settings.cell_padding }}px;
+  }
+
+  .sp-comp-row0>div:nth-child(1), .sp-comp-row>div:nth-child(1) {
+    text-align: left;
+  }
+
+  .sp-comp-row0>div:nth-child(2) {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    font-weight: bold !important;
+  }
+
+  .sp-comp-row0>div:nth-child(2), .sp-comp-row>div:nth-child(2) {
+    text-align: center;
+    background-color: {{ section.settings.highlight_background }};
+  }
+
+  .sp-comp-row0>div:nth-child(3), .sp-comp-row>div:nth-child(3) {
+    text-align: center;
+  }
+
+  .sp-comp .sp-comp-check, .sp-comp .sp-comp-x {
+    width: 20px;
+    height: 20px;
+  }
+
+  .sp-comp .sp-comp-check g {
+    fill: {{ section.settings.check_color }} !important;
+  }
+
+  .sp-comp .sp-comp-x g {
+    fill: {{ section.settings.x_color }} !important;
+  }
+
+  @media only screen and (max-width: 800px) {
+
+  }
+</style>
+
+<div id="sp-comp-{{ section.id }}" class="sp-comp-wrap">
+
+  <div class="sp-comp">
+
+  <div class="sp-comp-grid">
+
+    <div class="sp-comp-col">
+
+      <div id="sp-comp-{{ section.id }}" class="sp-comp">
+
+        <div class="sp-comp-row0">
+          <div>&nbsp;</div>
+          <div>{{ section.settings.product_title }}</div>
+          <div>{{ section.settings.competitor_title }}</div>
+        </div>
+
+        {% for block in section.blocks %}
+          <div class="sp-comp-row">
+            <div>{{ block.settings.label }}</div>
+            <div>
+              {% if block.settings.product_support %}                
+                <svg class="sp-comp-check" width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                      <g id="check_circle_FILL0_wght400_GRAD0_opsz24" fill="#000000" fill-rule="nonzero">
+                          <path d="M8,0 C10.2333333,0 12.125,0.775 13.675,2.325 C15.225,3.875 16,5.76666667 16,8 C16,10.2333333 15.225,12.125 13.675,13.675 C12.125,15.225 10.2333333,16 8,16 C5.76666667,16 3.875,15.225 2.325,13.675 C0.775,12.125 0,10.2333333 0,8 C0,5.76666667 0.775,3.875 2.325,2.325 C3.875,0.775 5.76666667,0 8,0 Z M12.25,4.15 L6.6,9.8 L3.75,6.95 L2.35,8.35 L6.6,12.6 L13.65,5.55 L12.25,4.15 Z" id="Shape"></path>
+                      </g>
+                  </g>
+                </svg>
+              {% else %}
+                <svg class="sp-comp-x" width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                      <g id="cancel_FILL0_wght400_GRAD0_opsz24" fill="#000000" fill-rule="nonzero">
+                          <path d="M8,0 C9.10666667,0 10.1466667,0.21 11.12,0.63 C12.0933333,1.05 12.94,1.62 13.66,2.34 C14.38,3.06 14.95,3.90666667 15.37,4.88 C15.79,5.85333333 16,6.89333333 16,8 C16,9.10666667 15.79,10.1466667 15.37,11.12 C14.95,12.0933333 14.38,12.94 13.66,13.66 C12.94,14.38 12.0933333,14.95 11.12,15.37 C10.1466667,15.79 9.10666667,16 8,16 C6.89333333,16 5.85333333,15.79 4.88,15.37 C3.90666667,14.95 3.06,14.38 2.34,13.66 C1.62,12.94 1.05,12.0933333 0.63,11.12 C0.21,10.1466667 0,9.10666667 0,8 C0,6.89333333 0.21,5.85333333 0.63,4.88 C1.05,3.90666667 1.62,3.06 2.34,2.34 C3.06,1.62 3.90666667,1.05 4.88,0.63 C5.85333333,0.21 6.89333333,0 8,0 Z M10.88,4 L8,6.88 L5.12,4 L4,5.12 L6.88,8 L4,10.88 L5.12,12 L8,9.12 L10.88,12 L12,10.88 L9.12,8 L12,5.12 L10.88,4 Z" id="Shape"></path>
+                      </g>
+                  </g>
+                </svg>
+              {% endif %}
+            </div>
+            <div>
+              {% if block.settings.competitor_support %}                
+                <svg class="sp-comp-check" width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                      <g id="check_circle_FILL0_wght400_GRAD0_opsz24" fill="#000000" fill-rule="nonzero">
+                          <path d="M8,0 C10.2333333,0 12.125,0.775 13.675,2.325 C15.225,3.875 16,5.76666667 16,8 C16,10.2333333 15.225,12.125 13.675,13.675 C12.125,15.225 10.2333333,16 8,16 C5.76666667,16 3.875,15.225 2.325,13.675 C0.775,12.125 0,10.2333333 0,8 C0,5.76666667 0.775,3.875 2.325,2.325 C3.875,0.775 5.76666667,0 8,0 Z M12.25,4.15 L6.6,9.8 L3.75,6.95 L2.35,8.35 L6.6,12.6 L13.65,5.55 L12.25,4.15 Z" id="Shape"></path>
+                      </g>
+                  </g>
+                </svg>
+              {% else %}
+                <svg class="sp-comp-x" width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                      <g id="cancel_FILL0_wght400_GRAD0_opsz24" fill="#000000" fill-rule="nonzero">
+                          <path d="M8,0 C9.10666667,0 10.1466667,0.21 11.12,0.63 C12.0933333,1.05 12.94,1.62 13.66,2.34 C14.38,3.06 14.95,3.90666667 15.37,4.88 C15.79,5.85333333 16,6.89333333 16,8 C16,9.10666667 15.79,10.1466667 15.37,11.12 C14.95,12.0933333 14.38,12.94 13.66,13.66 C12.94,14.38 12.0933333,14.95 11.12,15.37 C10.1466667,15.79 9.10666667,16 8,16 C6.89333333,16 5.85333333,15.79 4.88,15.37 C3.90666667,14.95 3.06,14.38 2.34,13.66 C1.62,12.94 1.05,12.0933333 0.63,11.12 C0.21,10.1466667 0,9.10666667 0,8 C0,6.89333333 0.21,5.85333333 0.63,4.88 C1.05,3.90666667 1.62,3.06 2.34,2.34 C3.06,1.62 3.90666667,1.05 4.88,0.63 C5.85333333,0.21 6.89333333,0 8,0 Z M10.88,4 L8,6.88 L5.12,4 L4,5.12 L6.88,8 L4,10.88 L5.12,12 L8,9.12 L10.88,12 L12,10.88 L9.12,8 L12,5.12 L10.88,4 Z" id="Shape"></path>
+                      </g>
+                  </g>
+                </svg>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+
+      </div>
+      <!-- /.sp-comp -->
+    
+    </div>
+    <!-- /.sp-comp-col -->
+
+  </div>
+  <!-- /.sp-comp-container -->
+
+  </div>
+  <!-- /.sp-comp -->
+  
+</div>
+<!-- /.sp-comp-wrap -->
+
+{% schema %}
+  {
+    "name": "🚀SP - Comparison Grid",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Text",
+        "info": "Set the text size for your widget"
+      },
+      {
+        "type": "font_picker",
+        "id": "text_font",
+        "label": "Text Font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "range",
+        "id": "text_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Text Size",
+        "default": 15
+      },
+      {
+        "type": "range",
+        "id": "mobile_text_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Mobile Text Size",
+        "default": 15
+      },
+      {
+        "type": "header",
+        "content": "Colors",
+        "info": "Set colors for the section."
+      },
+      {
+        "type": "color_background",
+        "id": "background_color",
+        "default": "linear-gradient(164deg, #FFF 0%, #FFF 100%)",
+        "label": "Background Color"
+      },
+      {
+        "type": "color",
+        "id": "highlight_background",
+        "default": "#F3F9FE",
+        "label": "Highlight Color"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "default": "#111111",
+        "label": "Text Color"
+      },
+      {
+        "type": "color",
+        "id": "border_color",
+        "default": "#CCCCCC",
+        "label": "Border Color"
+      },
+      {
+        "type": "color",
+        "id": "check_color",
+        "default": "#00B05A",
+        "label": "Check Color"
+      },
+      {
+        "type": "color",
+        "id": "x_color",
+        "default": "#D61F1F",
+        "label": "X Color"
+      },
+      {
+        "type": "header",
+        "content": "Dimensions",
+        "info": "Set the section dimensions in pixels."
+      },
+      {
+        "type": "number",
+        "id": "max_width",
+        "default": 1000,
+        "label": "Max Width of Section"
+      },
+      {
+        "type": "number",
+        "id": "padding_top",
+        "default": 25,
+        "label": "Padding Top"
+      },
+      {
+        "type": "number",
+        "id": "padding_bottom",
+        "default": 25,
+        "label": "Padding Bottom"
+      },
+      {
+        "type": "number",
+        "id": "padding_left",
+        "default": 10,
+        "label": "Padding Left"
+      },
+      {
+        "type": "number",
+        "id": "padding_right",
+        "default": 10,
+        "label": "Padding Right"
+      },
+      {
+        "type": "number",
+        "id": "cell_padding",
+        "default": 5,
+        "label": "Cell Padding"
+      },
+      {
+        "type": "inline_richtext",
+        "id": "product_title",
+        "label": "Product Title",
+        "default": "Our Product"
+      },
+      {
+        "type": "inline_richtext",
+        "id": "competitor_title",
+        "label": "Competitor Product",
+        "default": "Competitor Product"
+      }
+    ],
+    "blocks": [
+      {
+       "name": "Comparison",
+       "type": "comparison",
+       "settings": [
+          {
+            "type": "inline_richtext",
+            "id": "label",
+            "label": "Label"
+          },
+          {
+            "type": "checkbox",
+            "id": "product_support",
+            "label": "Product Supports",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "competitor_support",
+            "label": "Competitor Supports",
+            "default": false
+          }
+       ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "🚀SP - Comparison Grid",
+        "category": "Custom"
+      }
+    ]
+  }
+{% endschema %}

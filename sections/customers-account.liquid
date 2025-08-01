@@ -1,0 +1,111 @@
+{{ 'section-account.css' | asset_url | stylesheet_tag }}
+
+{% render 'page-heading', title: 'customers.account_page.title', title_is_translation: true, no_border: true, custom_margin: 'gutter-bottom--small' %}
+
+<div class="gutter--grid-padding gutter-bottom--none gutter-top--none">
+	<a class="button button--solid--hover-accent" href="{{ routes.account_logout_url }}">
+		<span class="button__text">{{ 'customers.login_page.form_logout_button' | t }}</span>
+	</a>
+</div>
+
+<hr class="account-divider gutter-top--regular" />
+
+<div class="gutter--grid-padding gutter-top--regular gutter-bottom--regular">
+	<div class="grid grid-3 grid-portable-1 grid--layout gap--gutter-grid-padding">
+		
+		<div class="grid-offset-2">
+
+			<h2 class="text-size--30 text-font--headings text-weight--bold">{{ 'customers.account_page.subtitle' | t }}</h2>
+
+			{%- paginate customer.orders by 20 -%}
+
+				{%- if customer.orders.size != 0 -%}
+
+					<div class="account-table">
+						<div class="thead">
+							<div class="tr orders">
+								<span class="th">{{ 'customers.account_page.orders_table.order' | t }}</span>
+								<span class="th">{{ 'customers.account_page.orders_table.date' | t }}</span>
+								<span class="th">{{ 'customers.account_page.orders_table.payment_status' | t }}</span>
+								<span class="th">{{ 'customers.account_page.orders_table.fulfillment_status' | t }}</span>
+								<span class="th">{{ 'customers.account_page.orders_table.total' | t }}</span>
+							</div>
+						</div>
+						<div class="tbody">
+							{% for order in customer.orders %}
+								<div class="tr orders">
+									<div class="td">
+										<span class="label">{{ 'customers.account_page.orders_table.order' | t }}</span>
+										<span>{{ order.name | link_to: order.customer_url }}</span>
+									</div>
+									<div class="td">
+										<span class="label">{{ 'customers.account_page.orders_table.date' | t }}</span>
+										<span>{{ order.created_at | date: "%b %d, %Y" }}</span>
+									</div>
+									<div class="td">
+										<span class="label">{{ 'customers.account_page.orders_table.payment_status' | t }}</span>
+										<span>{{ order.financial_status_label }}</span>
+									</div>
+									<div class="td">
+										<span class="label">{{ 'customers.account_page.orders_table.fulfillment_status' | t }}</span>
+										{{ order.fulfillment_status_label }}</span>
+									</div>
+									<div class="td">
+										<span class="label">{{ 'customers.account_page.orders_table.total' | t }}</span>
+										<span>{{ order.total_price | money }}</span>
+									</div>
+									<div class="td mobile-cta">
+										<a href="{{ order.customer_url }}" class="button button--fullwidth">{{ 'customers.account_page.view_order_button_label' | t }}</a>
+									</div>
+								</div>
+							{% endfor %}
+						</div>
+						
+					</div>
+
+				{%- else -%}
+
+					<p>{{ 'customers.account_page.no_orders_message' | t }}</p>
+
+				{%- endif -%}		
+			
+				{%- if paginate.pages > 1 -%}
+					{%- render 'pagination', paginate: paginate -%}
+				{%- endif -%}
+
+			{%- endpaginate -%}
+
+		</div>
+
+		<aside class="has-gap">
+			
+			<h2 class="text-size--30 text-font--headings text-weight--bold">{{ 'customers.account_page.account_details_subtitle' | t }}</h2>
+
+			<div class="account-widget">
+
+				<div class="account-widget__head">
+					<span>{{ customer.name }}</span>
+				</div>
+
+				<div class="account-widget__body remove-empty-space">
+					<div class="gutter--grid-padding">
+						{{ customer.default_address | format_address }}
+
+						<div class="gutter-top--grid-padding"><a class="button button--solid--hover-accent button--medium" href="{{ routes.account_addresses_url }}"><span class="button__text">{{ 'customers.account_page.view_addresses_link' | t }} ({{ customer.addresses_count }})</span></a></div>
+					</div>
+				</div>
+
+			</div>			
+		</aside>
+		
+	</div>
+</div>
+
+{%- render 'color-scheme', color_scheme: blank, hide_section_bottom_border: false -%}
+
+{% schema %}
+  {
+    "name": "t:sections.local-extra-words.sections.customers.account.name",
+    "class": "element--has-section-borders"
+  }
+{% endschema %}

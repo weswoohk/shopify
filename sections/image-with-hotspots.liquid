@@ -1,0 +1,455 @@
+{%- render 'section-heading', heading: section.settings.heading, seo_h_tag: section.settings.seo_h_tag, hide_border: section.settings.disable_section_title_border -%}
+
+{{ 'section-image-hotspots.css' | asset_url | stylesheet_tag }}
+
+<image-hotspots class="grid grid--layout grid--align-items-start grid-4 grid-laptop-6 grid-portable-1">
+
+  <div class="hotspots__image card grid-offset-3 grid-offset-laptop-4 grid-offset-portable-1
+    {% if section.settings.remove_padding %} card--no-padding {% endif %}
+    {% if section.settings.remove_border_radius or section.settings.remove_padding %} card--no-radius {% endif %}"
+    data-js-prlx-parent
+  >
+
+    {%- liquid 
+      if section.index == 1 and section.location == 'template'
+        assign preload = "high"
+      else
+        assign preload = false
+      endif
+    -%}
+
+    <div data-js-prlx-children>
+
+      <div class="card__image {% if section.settings.mobile_image %} portable-hide {% endif %}"
+        style="padding-top:{% if section.settings.image %}{{ 100 | divided_by: section.settings.image.aspect_ratio }}{% else %}50{% endif %}%"
+      >
+
+        {%- liquid
+          
+          if section.settings.image
+            if settings.page_boxed_layout
+              assign sizes = 'sizes="(max-width: 1023px) 100vw, (max-width: 1280px) calc(100vw / 1.5), (max-width: 1360px) calc(100vw / 1.33), 1024px"'
+            else
+              assign sizes = 'sizes="(max-width: 1023px) 100vw, (max-width: 1280px) calc(100vw / 1.5), calc(100vw / 1.33)"'
+            endif
+            render 'lazy-image', image: section.settings.image, type: 'background', sizes: sizes, prlx: true, preload: preload, hover_animation: add_hover_animation
+          else
+            render 'lazy-svg', image: 'hero-apparel-1', class: 'onboarding-svg onboarding-svg--background'
+          endif
+          
+        -%}
+
+      </div>
+
+      {%- if section.settings.mobile_image -%}
+        <div class="hide portable-show"><div class="card__image" 
+          style="padding-top:{{ 100 | divided_by: section.settings.mobile_image.aspect_ratio }}%"
+        >
+          {%- render 'lazy-image', image: section.settings.mobile_image, type: 'background', sizes: 'sizes="100vw"', prlx: true, preload: preload -%}
+        </div></div>
+      {%- endif -%}
+
+      {{ 'section-image-with-hotspots.css' | asset_url | stylesheet_tag }}
+
+      <div class="hotspots element--is-absolute">
+        {%- for block in section.blocks -%}
+    
+          {%- style -%}
+            #spot-detail-{{ block.id }} {
+              top: {{ block.settings.vertical_offset_desktop }}%;
+              left: {{ block.settings.horizontal_offset_desktop }}%;
+            }
+            .hotspots__details-item--mobile[data-id="spot-detail-{{ block.id }}"] {
+              top: {{ block.settings.vertical_offset_desktop }}%;
+              left: {{ block.settings.horizontal_offset_desktop }}%;
+            }
+    
+            {%- if section.settings.mobile_image -%}
+            @media screen and (max-width: 767px) {
+              #spot-detail-{{ block.id }} {
+                top: {{ block.settings.vertical_offset_mobile }}%;
+                left: {{ block.settings.horizontal_offset_mobile }}%;
+              } 
+              .hotspots__details-item--mobile[data-id="spot-detail-{{ block.id }}"] {
+                top: {{ block.settings.vertical_offset_mobile }}%;
+                left: {{ block.settings.horizontal_offset_mobile }}%;
+              }
+            }
+            {%- endif -%}
+          {%- endstyle -%}
+            
+          <div class="hotspots__element" data-js-hotspot-index id="spot-detail-{{ block.id }}" aria-hidden="true" tabindex="-1"><span class="text-size--14 text-weight--bold">{{ forloop.index }}</span></div>
+    
+        {%- endfor -%}
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="hotspots__details element--is-sticky grid-offset-laptop-2 grid-offset-portable-1 portable-hide">
+    {%- for block in section.blocks -%}
+      <div data-id="spot-detail-{{ block.id }}" data-js-hotspot-detail class="hotspots__details-item element--has-grid-borders"
+        {{ block.shopify_attributes }}
+      >
+
+        <div class="hotspots__details-item__index text-size--18 text-weight--bold">
+          {{ forloop.index }}
+        </div>
+
+        <div class="hotspots__details-item__content">
+
+          {%- case block.type -%}
+    
+            {%- when 'product' -%}
+
+              {%- assign hotspot_product = block.settings.product -%}
+
+              <span class="text-size--18 text-weight--bold">
+                {%- liquid 
+                  unless hotspot_product == blank
+                    echo hotspot_product.title 
+                  else
+                    echo 'general.onboarding.product_title' | t
+                  endunless
+                -%}
+              </span>
+
+              <span class="text-size--16">
+                {%- liquid
+    
+                  unless hotspot_product == blank
+
+                    assign price = hotspot_product.price | money
+
+                    if hotspot_product.price_varies
+                      if hotspot_product.compare_at_price > hotspot_product.price
+                        echo 'products.grid.on_sale_from_html' | t: price: price
+                      else
+                        echo 'products.grid.from_text_html' | t: price: price
+                      endif
+                    else
+                      if hotspot_product.compare_at_price > hotspot_product.price
+                        echo price
+                        echo '<del>'
+                          echo hotspot_product.compare_at_price | money
+                        echo '</del>'
+                      else 
+                        echo price
+                      endif
+                    endif
+
+                  else 
+                    echo 9999 | money
+                  endunless
+
+                -%}
+              </span>
+
+              <span>   
+                <a class="button button--small button--outline--hover-accent" href="{{ hotspot_product.url }}">
+                  <span class="button__text">
+                    {{ 'cart.quick_view_product' | t }}
+                  </span>
+                </a>
+              </span>
+    
+            {%- when 'text' -%}
+              <span class="text-size--18 text-weight--bold">{{ block.settings.title | escape }}</span>
+              <span class="text-size--16">{{ block.settings.description | escape }}</span>
+
+          {%- endcase -%}
+
+        </div>
+        
+      </div>
+    {%- endfor -%}
+  </div>
+
+</image-hotspots>
+
+{%- render 'section-footer', cta_label: section.settings.cta_label, cta_label_is_translation: false, cta_url: section.settings.cta_url, cta_target: section.settings.cta_target -%}
+
+{%- render 'color-scheme', color_scheme: section.settings.color_scheme, hide_section_bottom_border: section.settings.disable_section_bottom_border, prlx: true -%}
+
+<script src="{{ 'section-image-hotspots.js' | asset_url }}" defer></script>
+
+{% schema %}
+  {
+    "name": "t:sections.refactor_words.settings.image_with_hotspots.label",
+    "class": "element--has-section-borders mount-hotspots",
+    "max_blocks": 6,
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.layout_labels.section_heading.label"
+      },
+      {
+        "type": "textarea",
+        "id": "heading",
+        "label": "t:sections.local-extra-words.sections.headings.heading",
+        "default": "Image with hotspots"
+      },
+      {
+        "type": "select",
+        "id": "seo_h_tag",
+        "label": "t:sections.refactor_words.seo.label",
+        "info": "t:sections.refactor_words.seo.info",
+        "options": [
+          {
+            "value": "h1",
+            "label": "H1"
+          },
+          {
+            "value": "h2",
+            "label": "H2"
+          },
+          {
+            "value": "h3",
+            "label": "H3"
+          },
+          {
+            "value": "h4",
+            "label": "H4"
+          },
+          {
+            "value": "span",
+            "label": "span"
+          }
+        ],
+        "default": "h2"
+      },
+      {
+        "type": "checkbox",
+        "id": "disable_section_title_border",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_title_border",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.layout_labels.content"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "t:sections.main-list-collections.blocks.collection.settings.image.label"
+      },
+      {
+        "type": "image_picker",
+        "id": "mobile_image",
+        "label": "t:sections.refactor_words.late_edits.image_with_hotspots.image_on_mobile",
+        "info": "t:sections.refactor_words.late_edits.labels.optional"
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.labels.section_footer"
+      },
+      {
+        "type": "text",
+        "id": "cta_label",
+        "label": "t:raw-extra-words.settings_schema.labels.button_text"
+      },
+      {
+        "type": "url",
+        "id": "cta_url",
+        "label": "t:raw-extra-words.settings_schema.labels.button_url"
+      },
+      {
+        "type": "checkbox",
+        "id": "cta_target",
+        "label": "t:footer-menu-items.open_links_in_new_window",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.colors.header_section"
+      },
+      {
+        "type": "color_scheme",
+        "id": "color_scheme",
+        "label": "t:color-schemes.name_singular",
+        "default": "scheme_1"
+      },
+      {
+        "type": "checkbox",
+        "id": "disable_section_bottom_border",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+        "default": false
+      },
+      {
+      "type": "header",
+        "content": "t:raw-extra-words.settings_schema.colors.header_inner"
+      },
+      {
+        "type": "checkbox",
+        "id": "remove_border_radius",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.radius",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "remove_padding",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.padding_and_border",
+        "default": false
+      }
+    ],
+    "blocks": [
+      {
+        "type": "product",
+        "name": "t:sections.shop-the-look.blocks.product.name",
+        "settings": [
+          {
+            "type": "product",
+            "id": "product",
+            "label": "t:sections.shop-the-look.blocks.product.settings.select_product.label"
+          },
+          {
+            "type": "header",
+            "content": "t:sections.refactor_words.settings.image_with_hotspots.hotspot.label_desktop_offset"
+          },
+          {
+            "type": "range",
+            "id": "vertical_offset_desktop",
+            "label": "t:sections.refactor_words.settings.image_with_hotspots.hotspot.offset_vertical",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+          },
+          {
+            "type": "range",
+            "id": "horizontal_offset_desktop",
+            "label": "t:sections.refactor_words.settings.image_with_hotspots.hotspot.offset_horizontal",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+          }, 
+          {
+            "type": "header",
+            "content": "t:sections.refactor_words.settings.image_with_hotspots.hotspot.label_mobile_offset",
+            "info": "t:sections.refactor_words.late_edits.image_with_hotspots.hotspot.mobile_info"
+          }, 
+          {
+            "type": "range",
+            "id": "vertical_offset_mobile",
+            "label": "t:sections.refactor_words.settings.image_with_hotspots.hotspot.offset_vertical",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+          }, 
+          {
+            "type": "range",
+            "id": "horizontal_offset_mobile",
+            "label": "t:sections.refactor_words.settings.image_with_hotspots.hotspot.offset_horizontal",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+          }
+        ]
+      }, 
+      {
+        "type": "text",
+        "name": "t:sections.rich-text.blocks.text.name",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "t:sections.split-extra-words.settings_schema.headings.title",
+            "default": "Product detail"
+          },
+          {
+            "type": "text",
+            "id": "description",
+            "label": "t:sections.footer.blocks.text.settings.content.label",
+            "default": "Describe specific features and benefits of your product."
+          },
+          {
+            "type": "header",
+            "content": "t:sections.refactor_words.settings.image_with_hotspots.hotspot.label_desktop_offset"
+          },
+          {
+            "type": "range",
+            "id": "vertical_offset_desktop",
+            "label": "t:sections.refactor_words.settings.image_with_hotspots.hotspot.offset_vertical",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+          }, 
+          {
+            "type": "range",
+            "id": "horizontal_offset_desktop",
+            "label": "t:sections.refactor_words.settings.image_with_hotspots.hotspot.offset_horizontal",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+          }, 
+          {
+            "type": "header",
+            "content": "t:sections.refactor_words.settings.image_with_hotspots.hotspot.label_mobile_offset",
+            "info": "t:sections.refactor_words.late_edits.image_with_hotspots.hotspot.mobile_info"
+          }, 
+          {
+            "type": "range",
+            "id": "vertical_offset_mobile",
+            "label": "t:sections.refactor_words.settings.image_with_hotspots.hotspot.offset_vertical",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+          }, 
+          {
+            "type": "range",
+            "id": "horizontal_offset_mobile",
+            "label": "t:sections.refactor_words.settings.image_with_hotspots.hotspot.offset_horizontal",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:sections.refactor_words.settings.image_with_hotspots.label",
+        "blocks": [
+          {
+            "type": "product",
+            "settings": {
+              "vertical_offset_desktop": 25,
+              "horizontal_offset_desktop": 15,
+              "vertical_offset_mobile": 25,
+              "horizontal_offset_mobile": 15
+            }
+          },
+          {
+            "type": "text",
+            "settings": {
+              "vertical_offset_desktop": 50,
+              "horizontal_offset_desktop": 50,
+              "vertical_offset_mobile": 50,
+              "horizontal_offset_mobile": 50
+            }
+          }
+        ]
+      }
+    ],
+    "disabled_on": {
+      "groups": ["header", "custom.drawers", "custom.overlay"],
+      "templates": ["password"]
+    }
+  }
+{% endschema %}

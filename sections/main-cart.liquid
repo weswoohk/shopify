@@ -1,0 +1,115 @@
+{{ 'component-cart.css' | asset_url | stylesheet_tag }}
+{{ 'section-main-cart.css' | asset_url | stylesheet_tag }}
+
+{%- render 'page-heading', title: 'cart.title', title_is_translation: true -%}
+
+<div class="gutter--grid-padding gutter-top--regular gutter-bottom--regular">
+
+  <div class="cart-section {% if cart.items.size == 0 %} cart-section--empty {% endif %}">
+    <div>
+
+      {%- for block in section.blocks -%}
+
+        {%- case block.type -%}
+
+          {%- when '@app' -%}
+            <div class="margin-top--regular" {{ block.shopify_attributes }}>
+              {%- render block -%}
+            </div>
+
+          {%- when 'cart-items' -%}
+            <div {{ block.shopify_attributes }}>
+              {%- render 'cart-form-page' -%}
+            </div>
+          
+          {%- when 'shipping-calculator' -%}
+
+            <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer></script>
+            <script src="{{ 'component-shipping-calculator.js' | asset_url }}" defer></script>
+            
+            <shipping-calculator {{ block.shopify_attributes }}>
+
+              <div class="shipping-calculator cart-block margin-top--regular">
+                <div class="cart-block__head" style="grid-template-columns:1fr">
+                  <span>{{ 'cart.shipping_calculator.title' | t }}</span>
+                </div>
+
+                <div class="shipping-calculator__content cart-block__content">
+
+                  <div class="shipping-calculator__cell">
+                    <label for="country">{{ 'customers.addresses_page.form.country_label' | t }}</label>
+                    <select name="country" id="shipping-estimator-country" data-default="{{ customer.default_address.country | default: section.settings.shipping_estimator_default_country }}" required>
+                      {{- country_option_tags -}}
+                    </select>
+                  </div>
+
+                  <div class="shipping-calculator__cell" id="address_province_container" style="display: none">
+                    <label for="province">{{ 'customers.addresses_page.form.province_label' | t }}</label>
+                    <select name="province" id="shipping-estimator-province" data-default="{{ customer.default_address.province }}"></select>
+                  </div>
+
+                  <div class="shipping-calculator__cell">
+                    <label for="zip">{{ 'customers.addresses_page.form.zip_label' | t }}</label>
+                    <input type="text" name="zip" id="shipping-estimator-zip" class="form__field form__field--text" value="{{ customer.default.address.zip }}" required>
+                  </div>
+
+                  <div class="shipping-calculator__cell" style="flex-grow:1">
+                    {%- render 'button', style: 'outline', label: 'cart.shipping_calculator.form_button_label', label_is_translation: true, is_submit: true, type: 'button', attribute: 'data-action="estimate-shipping"', class: 'button--outline--hover-accent button--fullwidth  js-estimate-shipping' -%}
+                  </div>
+
+                </div>
+
+                <div class="gutter--regular shipping-estimator__results" style="display: none;">
+                  <div class="alert alert--error"></div>
+                  <div class="shipping-estimator__results-content" style="display: none;">
+                    <span class="shipping-estimator__results-content-heading"></span>
+                    <ul class="shipping-estimator__results-content-list"></ul>
+                  </div>
+                </div>
+                
+              </div>
+
+            </shipping-calculator>
+
+          {%- endcase -%}
+
+      {%- endfor -%}
+      
+    </div>
+
+    <div>
+      {%- render 'cart-subtotal', type: 'page' -%}
+    </div>
+
+  </div>  
+</div>
+
+<style style="text/css">
+  cart-form .alert {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="none" height="29" viewBox="0 0 29 29" width="29" xmlns="http://www.w3.org/2000/svg"><circle cx="14.5" cy="14.5" fill="{{ settings.color_scheme_container.settings.text | url_encode }}" r="14.5"/><path d="m16.1429 13.4293-.8134 4.2169h-1.4961l-.8334-4.2169v-5.4293h3.1429zm-.0804 5.4792v3.0915h-2.9922v-3.0915z" fill="{{ settings.color_scheme_container.settings.background | url_encode }}"/></svg>');
+  }
+</style>
+
+{%- render 'color-scheme', color_scheme: blank, hide_section_bottom_border: false, prlx: true -%}
+
+{% schema %}
+{
+  "name": "t:settings_schema.cart-page.name",
+  "class": "element--has-section-borders",
+  "blocks": [
+    {
+      "type": "cart-items",
+      "limit": 1,
+      "name": "t:sections.main-cart-items.name"
+    },
+    {
+      "type": "shipping-calculator",
+      "limit": 1,
+      "name": "t:sections.local-extra-words.sections.main-cart.blocks.shipping-calculator.name"
+    },
+    {
+      "type": "@app"
+    }
+  ]
+}
+{% endschema %}

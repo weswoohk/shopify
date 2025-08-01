@@ -1,0 +1,208 @@
+{%- render 'section-heading', heading: section.settings.heading, seo_h_tag: section.settings.seo_h_tag, hide_border: section.settings.disable_section_title_border -%}
+
+{{ 'section-buttons.css' | asset_url | stylesheet_tag }}
+
+<div id="element-{{ section.id }}" class="card card--has-background buttons element--overflow-hidden">
+
+  <div class="buttons-wrapper gutter-top--small gutter-bottom--small align-content--{{ section.settings.text_alignment }} {% if section.settings.full_width %} buttons-wrapper--fullwidth {% endif %}" >
+    {%- liquid
+      for block in section.blocks
+        assign button_class = section.settings.button_size | append: ' ' | append: block.settings.button_hover
+        render 'button', label: block.settings.button_label, link: block.settings.link, style: block.settings.button_style, class: button_class, target: block.settings.target
+      endfor
+    -%}
+  </div>
+
+</div>
+
+{%- liquid
+  render 'color-scheme', color_scheme: section.settings.color_scheme, hide_section_bottom_border: section.settings.disable_section_bottom_border
+-%}
+
+{% schema %}
+{
+  "name": "t:raw-extra-words.settings_schema.labels.buttons",
+  "class": "element--has-section-borders mount-buttons",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.layout_labels.section_heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "t:sections.local-extra-words.sections.headings.heading"
+    },
+    {
+      "type": "select",
+      "id": "seo_h_tag",
+      "label": "t:sections.refactor_words.seo.label",
+      "info": "t:sections.refactor_words.seo.info",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "span",
+          "label": "span"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_section_title_border",
+      "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_title_border",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.labels.settings"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:raw-extra-words.new_schema.alignment",
+      "options": [
+        {
+          "value": "horizontal-left",
+          "label": "t:sections.rich-text.settings.text_alignment.options__1.label"
+        },
+        {
+          "value": "horizontal-center",
+          "label": "t:sections.rich-text.settings.text_alignment.options__2.label"
+        },
+        {
+          "value": "horizontal-right",
+          "label": "t:sections.rich-text.settings.text_alignment.options__3.label"
+        }
+      ],
+      "default": "horizontal-center"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "t:sections.image.fullwidth",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "button_size",
+      "label": "t:raw-extra-words.new_schema.buttons_size",
+      "options": [
+        {
+          "value": "button--regular",
+          "label": "t:raw-extra-words.settings_schema.options.regular"
+        },
+        {
+          "value": "button--large",
+          "label": "t:raw-extra-words.settings_schema.options.large"
+        },
+        {
+          "value": "button--huge",
+          "label": "t:raw-extra-words.settings_schema.options.huge"
+        }
+      ],
+      "default": "button--large"
+    },  
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.colors.header_section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:color-schemes.name_singular",
+      "default": "scheme_1"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_section_bottom_border",
+      "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "button",
+      "name": "t:sections.rich-text.blocks.button.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:sections.rich-text.blocks.button.settings.button_label.label",
+          "default": "Call to action"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.rich-text.blocks.button.settings.button_link.label"
+        },
+        {
+          "id": "button_style",
+          "label": "t:sections.local-extra-words.sections.buttons.style.label",
+          "type": "select",
+          "options": [
+            {
+              "value": "outline",
+              "label": "t:sections.local-extra-words.sections.buttons.style.option__1"
+            },
+            {
+              "value": "solid",
+              "label": "t:sections.local-extra-words.sections.buttons.style.option__2"
+            }
+          ],
+          "default": "outline"
+        },
+        {
+          "type": "select",
+          "id": "button_hover",
+          "label": "t:raw-extra-words.new_schema.button_hover.label",
+          "options": [
+            {
+              "value": "button--hover-invert",
+              "label": "t:1-2-0.invert"
+            },
+            {
+              "value": "",
+              "label": "t:raw-extra-words.new_schema.button_hover.option_2"
+            }
+          ],
+          "default": ""
+        },
+        {
+          "type": "checkbox",
+          "id": "target",
+          "label": "t:sections.local-extra-words.sections.announcement-bar.blocks.content.settings.target",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:raw-extra-words.settings_schema.labels.buttons",
+      "blocks": [
+        { "type": "button" },
+        { "type": "button" }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "custom.drawers", "custom.overlay"]
+  }
+}
+{% endschema %}

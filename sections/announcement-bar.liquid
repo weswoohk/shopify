@@ -1,0 +1,148 @@
+{%- liquid
+
+  if section.settings.visibility == 'all'
+    assign show_on_homepage = true
+    assign show_on_pages = true
+  elsif section.settings.visibility == 'homepage'
+    assign show_on_homepage = true
+  elsif section.settings.visibility == 'no-homepage'
+    assign show_on_homepage = false
+    assign show_on_pages = true
+  elsif section.settings.visibility == 'product'
+    assign show_on_product = true
+  endif
+
+  if show_on_product == true and template.name == 'product'
+    assign show = true
+  endif
+  if show_on_homepage == true and template == 'index'
+    assign show = true
+  endif
+  if show_on_pages == true and template != 'index'
+    assign show = true
+  endif
+
+-%}
+
+{%- if show -%}
+
+  <div class="card card--no-borders card--no-radius card--has-background card--no-padding text-font--body {{ section.settings.text_size }}" data-js-inert>
+    <div class="card__content rte" style="text-align: {{ section.settings.text_alignment }};padding: var(--gutter-small) var(--grid-padding)">
+      {{ section.settings.content }}
+    </div>
+  </div>
+
+  {%- render 'color-scheme', color_scheme: section.settings.color_scheme, is_header_group: true, hide_section_bottom_border: section.settings.disable_section_bottom_border -%}
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.announcement-bar.name",
+  "class": "element--has-section-borders-alternate mount-announcement-bar",
+  "settings": [
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "t:sections.refactor_words.announcement-bar.visibility.label",
+      "options": [
+        {
+          "value": "all",
+          "label": "t:sections.refactor_words.announcement-bar.visibility.option_1"
+        },
+        {
+          "value": "homepage",
+          "label": "t:sections.refactor_words.announcement-bar.visibility.option_2"
+        },
+        {
+          "value": "product",
+          "label": "t:sections.refactor_words.announcement-bar.visibility.option_4"
+        },
+        {
+          "value": "no-homepage",
+          "label": "t:sections.refactor_words.announcement-bar.visibility.option_3"
+        }
+      ],
+      "default": "all"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "content",
+      "label": "t:raw-extra-words.settings_schema.layout_labels.content",
+      "default": "Introduce product <strong>promotions</strong>. Write about your brand. Flash deals!"
+    },
+    {
+      "type": "header",
+      "content": "t:settings_schema.typography.name"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "t:sections.footer.blocks.text.settings.text_size.label",
+      "options": [
+        {
+          "value": "text-size--18",
+          "label": "t:raw-extra-words.settings_schema.options.small"
+        },
+        {
+          "value": "text-size--24",
+          "label": "t:raw-extra-words.settings_schema.options.regular"
+        },
+        {
+          "value": "text-size--30",
+          "label": "t:raw-extra-words.settings_schema.options.large"
+        },
+        {
+          "value": "text-size--40",
+          "label": "t:raw-extra-words.settings_schema.options.extra_large"
+        }
+      ],
+      "default": "text-size--18"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:sections.image-with-text.settings.text_alignment.label",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.rich-text.settings.text_alignment.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.rich-text.settings.text_alignment.options__2.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.rich-text.settings.text_alignment.options__3.label"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.colors.header_section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:color-schemes.name_singular",
+      "default": "scheme_1"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_section_bottom_border",
+      "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.announcement-bar.name"
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

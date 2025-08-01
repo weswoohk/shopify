@@ -1,0 +1,69 @@
+{%- if section.settings.color_scheme != settings.color_scheme_container -%}
+  <style type="text/css">
+    #go-top {
+      --color-scheme-background: {{ section.settings.color_scheme.settings.background }};
+      --color-scheme-text: {{ section.settings.color_scheme.settings.text }};
+      --color-scheme-borders: {{ section.settings.color_scheme.settings.borders }};
+    }
+  </style>
+{%- endif -%}
+
+<span id="go-top" class="main-go-top main-go-top--{{ section.settings.position }}"
+  onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+>
+  <span class="visually-hidden">{{ 'general.accessibility_labels.go_to_top' | t }}</span>
+  <span class="main-go-top__icon" aria-hidden="true">{%- render 'theme-symbols', icon: 'chevron' -%}</span>
+</span>
+<script>
+  window.addEventListener('scroll', ()=>{
+    if ( window.scrollY > 500 ) {
+      document.getElementById('go-top').classList.add('show');
+    } else {
+      document.getElementById('go-top').classList.remove('show');
+    }
+  }, {passive: true});
+</script>
+
+{% schema %}
+  {
+    "name": "t:raw-extra-words.go_to_top",
+    "class": "mount-go-top",
+    "limit": 1,
+    "settings": [
+      {
+        "type": "select",
+        "id": "position",
+        "label": "t:raw-extra-words.settings_schema.product_grid.extra_caption.position.label",
+        "options": [
+          {
+            "value": "left",
+            "label": "t:raw-extra-words.sections.headings.alignment.option_1"
+          },
+          {
+            "value": "center",
+            "label": "t:raw-extra-words.sections.headings.alignment.option_2"
+          },
+          {
+            "value": "right",
+            "label": "t:raw-extra-words.sections.headings.alignment.option_3"
+          }
+        ],
+        "default": "right"
+      },
+      {
+        "type": "color_scheme",
+        "id": "color_scheme",
+        "label": "t:color-schemes.name_singular",
+        "default": "scheme_1"
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:raw-extra-words.go_to_top"
+      }
+    ],
+    "enabled_on": {
+      "groups": ["custom.overlay"]
+    }
+  }
+{% endschema %}

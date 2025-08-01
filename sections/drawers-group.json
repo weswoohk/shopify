@@ -1,0 +1,1 @@
+{"type":"custom.drawers","name":"t:raw-extra-words.drawers.name","sections":{"navigation":{"type":"drawer-navigation","blocks":{"menu":{"type":"menu","settings":{"main_linklist":"main-menu"}}},"block_order":["menu"],"settings":{}},"cart":{"type":"drawer-cart","settings":{}},"search":{"type":"drawer-search","settings":{}}},"order":["navigation","cart","search"]}

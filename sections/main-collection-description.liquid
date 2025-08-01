@@ -1,0 +1,152 @@
+{%- unless collection.description == blank -%}
+
+  {%- render 'section-heading', heading: section.settings.heading, seo_h_tag: section.settings.seo_h_tag, hide_border: section.settings.disable_section_title_border -%}
+
+  <div class="{{ section.settings.text_font }} {{ section.settings.text_line_height }} {{ section.settings.text_size }} rte remove-empty-space gutter--grid-padding gutter--top-regular">{{ collection.description }}</div>
+
+  {%- render 'color-scheme', color_scheme: section.settings.color_scheme, hide_section_bottom_border: section.settings.disable_section_bottom_border -%}
+
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "t:raw-extra-words.sections.collections.description.name",
+  "class": "element--has-section-borders",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:raw-extra-words.sections.collections.description.info"
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.layout_labels.section_heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "t:sections.local-extra-words.sections.headings.heading",
+      "default": "Collection description"
+    },
+    {
+      "type": "select",
+      "id": "seo_h_tag",
+      "label": "t:sections.refactor_words.seo.label",
+      "info": "t:sections.refactor_words.seo.info",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "span",
+          "label": "span"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "header",
+      "content": "t:settings_schema.typography.name"
+    },
+    {
+      "type": "select",
+      "id": "text_font",
+      "label": "t:raw-extra-words.new_schema.text_font",
+      "options": [
+        {
+          "value": "text-font--body",
+          "label": "t:sections.split-extra-words.settings_schema.typography.headings.body"
+        },
+        {
+          "value": "text-font--headings",
+          "label": "t:sections.split-extra-words.settings_schema.typography.headings.headings"
+        }
+      ],
+      "default": "text-font--body"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "t:sections.footer.blocks.text.settings.text_size.label",
+      "options": [
+        {
+          "value": "text-size--16",
+          "label": "t:raw-extra-words.settings_schema.options.small"
+        },
+        {
+          "value": "text-size--18",
+          "label": "t:raw-extra-words.settings_schema.options.regular"
+        },
+        {
+          "value": "text-size--24",
+          "label": "t:raw-extra-words.settings_schema.options.large"
+        },
+        {
+          "value": "text-size--30",
+          "label": "t:raw-extra-words.settings_schema.options.extra_large"
+        }
+      ],
+      "default": "text-size--18"
+    },
+    {
+      "type": "select",
+      "id": "text_line_height",
+      "label": "t:sections.split-extra-words.settings_schema.typography.settings.line_height",
+      "options": [
+        {
+          "value": "text-line-height--default",
+          "label": "t:raw-extra-words.settings_schema.options.default"
+        },
+        {
+          "value": "text-line-height--custom-small",
+          "label": "t:raw-extra-words.settings_schema.options.small"
+        },
+        {
+          "value": "text-line-height--custom-medium",
+          "label": "t:raw-extra-words.settings_schema.options.medium"
+        },
+        {
+          "value": "text-line-height--custom-large",
+          "label": "t:raw-extra-words.settings_schema.options.large"
+        }
+      ],
+      "default": "text-line-height--default"
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.colors.header_section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:color-schemes.name_singular",
+      "default": "scheme_1"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_section_bottom_border",
+      "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+      "default": false
+    }
+  ],
+  "presets": [{
+    "name": "t:raw-extra-words.sections.collections.description.name"
+  }],
+  "enabled_on": {
+    "templates": ["collection"]
+  }
+}
+{% endschema %}

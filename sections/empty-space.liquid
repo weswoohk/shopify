@@ -1,0 +1,52 @@
+<div class="{{ section.settings.height }}">&nbsp;</div>
+
+{%- render 'color-scheme', color_scheme: section.settings.color_scheme, hide_section_bottom_border: section.settings.disable_section_bottom_border -%}
+
+{% schema %}
+	{
+    "name": "t:raw-extra-words.sections.empty-space.name",
+    "class": "element--has-section-borders mount-empty-space",
+		"settings": [
+      {
+        "type": "select",
+        "id": "height",
+        "label": "t:raw-extra-words.sections.empty-space.option",
+        "options": [
+					{
+						"value": "gutter--regular",
+						"label": "t:raw-extra-words.settings_schema.options.small"
+					},
+					{
+						"value": "gutter--large",
+						"label": "t:raw-extra-words.settings_schema.options.large"
+					},
+					{
+						"value": "gutter--xlarge",
+						"label": "t:raw-extra-words.settings_schema.options.extra_large"
+					}
+        ],
+        "default": "gutter--large"
+      },
+      {
+        "type": "color_scheme",
+        "id": "color_scheme",
+        "label": "t:color-schemes.name_singular",
+        "default": "scheme_1"
+      },
+      {
+        "type": "checkbox",
+        "id": "disable_section_bottom_border",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+        "default": true
+      }
+		],
+    "presets": [
+      {
+        "name": "t:raw-extra-words.sections.empty-space.name"
+      }
+    ],
+    "disabled_on": {
+      "groups": ["header", "custom.drawers", "custom.overlay"]
+    }
+  }
+{% endschema %}

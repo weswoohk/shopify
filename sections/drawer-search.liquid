@@ -1,0 +1,73 @@
+<sidebar-drawer id="site-search-sidebar" class="sidebar" data-direction="right" tabindex="-1" role="dialog" aria-modal="true" style="display:none">
+
+  <div class="sidebar__container">
+
+    <div class="sidebar__content">
+
+      <div class="sidebar__header">
+        <span class="sidebar__title text-size--18 text-weight--bold text-transform--uppercase">
+          {{ 'search.drawer.title' | t }}
+        </span>
+        <button class="sidebar__close" data-js-close>
+          <span class="visually-hidden">{{ 'general.accessibility_labels.close_sidebar' | t }}</span>
+          <span aria-hidden="true" aria-role="img">{%- render 'theme-symbols', icon: 'close-small' -%}</span>
+        </button>
+      </div>
+
+      <div class="sidebar__body">
+        <search-form>
+          <div class="gutter--sidebar border--sidebar">
+            <form action="{{ routes.search_url }}" method="get" 
+              class="input-group search-bar ajax" role="search" autocomplete="off" style="padding:.5rem 0"
+            >
+              <label for="search-form-sidebar" class="visually-hidden">{{ 'search.drawer.title' | t }}</label>
+              <input id="search-form-sidebar" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'search.drawer.placeholder' | t }}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-js-search-input>
+            </form>
+          </div>
+          <div id="search-results" class="search-results predictive-search" data-js-search-results></div>
+          {%- if section.settings.featured_links != blank -%}
+            <div class="search-results__default sidebar__search-container">
+              <div class="sidebar__search-results">
+                <div class="search-block">
+                  {%- if section.settings.featured_links_title -%}
+                    <span class="search-title text-size--16">{{ linklists[section.settings.featured_links].title }}</span>
+                  {%- endif -%}
+                  {%- for link in linklists[section.settings.featured_links].links -%}
+                    <a class="search-item link-arrow text-size--18" href="{{ link.url }}" data-js-search-item tabindex="-1">
+                      <span class="link-arrow__icon">{%- render 'theme-symbols', icon: 'arrow' -%}</span>
+                      <span class="link-arrow__text text-weight--bold"><span class="text-animation--underline">{{ link.title }}</span></span>
+                    </a>
+                  {%- endfor %}
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+        </search-form>
+      </div>
+
+    </div>
+
+  </div>
+
+</sidebar-drawer>
+
+{% schema %}
+{
+  "name": "t:raw-extra-words.drawers.search.name",
+  "class": "mount-drawer",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "featured_links",
+      "label": "t:raw-extra-words.drawers.search.settings.menu_title",
+      "info": "t:raw-extra-words.drawers.search.settings.menu_info_1"
+    },
+    {
+      "type": "checkbox",
+      "id": "featured_links_title",
+      "label": "t:raw-extra-words.drawers.search.settings.menu_info_2",
+      "default": true
+    }
+  ]
+}
+{% endschema %}    

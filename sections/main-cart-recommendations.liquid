@@ -1,0 +1,130 @@
+<product-recommendations class="product-recommendations" id="cart-recommendations" data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ cart.items[0].product_id }}&limit=4">
+
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+
+    {%- render 'section-heading', heading: section.settings.heading, navigation: section.id, seo_h_tag: 'span', hide_border: section.settings.disable_section_title_border -%} 
+    
+    <css-slider data-options='{
+        "selector": "[data-js-product-item]",
+        "groupCells": true,
+        "navigation": false,
+        "thumbnails": false,
+        "disableMouseDownEvent": false
+      }'
+      class="css-slider"
+      id="slider-{{ section.id }}"
+    >
+
+      <div class="grid grid--slider {{ section.settings.layout_desktop }} 
+        {{ section.settings.layout_mobile }}
+        {% if settings.product_card_disable_border %} element--hide-inner-borders {% endif %}
+      ">
+        {%- liquid
+          for recommendation in recommendations.products
+            render 'product-item', product: recommendation, index: forloop.index, desktop_layout: section.settings.layout_desktop, layout_mobile: section.settings.layout_mobile, section_id: section.id
+          endfor
+        -%}
+      </div>
+
+    </css-slider>
+
+    {%- render 'section-footer', cta_label: false, cta_label_is_translation: false, cta_url: false, nav: section.id, nav_desktop: false, nav_mobile: true -%}
+
+    {%- render 'color-scheme', color_scheme: section.settings.color_scheme, hide_section_bottom_border: section.settings.disable_section_bottom_border -%}
+
+  {%- endif -%}
+
+  <script>
+
+    if ( window.prlxPush ) {
+      document.querySelector('product-recommendations')?.addEventListener('product-recommendations-loaded', ()=>{
+        window.prlxPush(document.querySelectorAll('product-recommendations [data-js-prlx-parent]'));
+      });
+    }
+    document.querySelector('product-recommendations')?.addEventListener('product-recommendations-loaded', ()=>{
+      document.querySelector('product-recommendations').classList.add('product-text-element--with-borders');
+    });
+  </script>
+  
+</product-recommendations>
+
+{% schema %}
+  {
+    "name": "t:raw-extra-words.settings_schema.cart.recommendations",
+    "class": "element--has-section-borders mount-css-slider mount-product-recommendations",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "t:raw-extra-words.settings_schema.cart.recommendations_info"
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.layout_labels.section_heading.label"
+      },
+      {
+        "type": "textarea",
+        "id": "heading",
+        "label": "t:sections.local-extra-words.sections.headings.heading",
+        "default": "Recommendations"
+      },
+      {
+        "type": "checkbox",
+        "id": "disable_section_title_border",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_title_border",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.layout_labels.layout"
+      },
+      {
+        "type": "select",
+        "id": "layout_desktop",
+        "label": "t:sections.local-extra-words.sections.columns.name",
+        "options": [
+          {
+            "value": "grid-3",
+            "label": "t:sections.local-extra-words.sections.columns.option__2"
+          },
+          {
+            "value": "grid-4 grid-lap-3",
+            "label": "t:sections.local-extra-words.sections.columns.option__3"
+          }
+        ],
+        "default": "grid-4 grid-lap-3"
+      },
+      {
+        "type": "select",
+        "id": "layout_mobile",
+        "label": "t:raw-extra-words.settings_schema.layout_labels.mobile_layout",
+        "options": [
+          {
+            "value": "grid-palm-1",
+            "label": "t:sections.local-extra-words.sections.columns.option__0"
+          },
+          {
+            "value": "grid-palm-2",
+            "label": "t:sections.local-extra-words.sections.columns.option__1"
+          }
+        ],
+        "default": "grid-palm-2"
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.colors.header_section"
+      },
+      {
+        "type": "color_scheme",
+        "id": "color_scheme",
+        "label": "t:color-schemes.name_singular",
+        "default": "scheme_1"
+      },
+      {
+        "type": "checkbox",
+        "id": "disable_section_bottom_border",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+        "default": false
+      }
+    ]
+  }
+{% endschema %}

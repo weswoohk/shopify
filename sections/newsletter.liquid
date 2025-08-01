@@ -1,0 +1,127 @@
+<div id="element-{{ section.id }}" class="{% if section.settings.is_centered %} text-align--center {% endif %} element--overflow-hidden">
+
+  <div class="card newsletter">
+    <div class="newsletter__container gutter-top--regular gutter-bottom--regular {% if section.settings.is_centered %} newsletter__container--centered {% endif %} spacing--large remove-empty-space">
+
+      {%- unless section.settings.title == blank -%}
+        <{{ section.settings.seo_h_tag }} class="text-font--headings text-size--40">{{ section.settings.title | escape }}</{{ section.settings.seo_h_tag }}>
+      {%- endunless -%}
+
+      {%- assign form_id = 'newsletter-' | append: section.id -%}
+      {%- form 'customer', id: form_id, class: '' -%}
+      
+        {%- render 'form-errors', form: form -%}
+
+        {%- if form.posted_successfully? -%}
+          
+          <p class="text-size--20">{{ 'general.newsletter.confirmation' | t }}</p>
+
+        {%- else -%}
+          
+          <fieldset>
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <input type="email" class="newsletter__input" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter.email_label' | t }}" name="contact[email]" id="Email-{{ form_id }}" aria-label="{{ 'general.newsletter.email_label' | t }}" autocorrect="off" autocapitalize="off" required>
+            <button type="submit" class="go go--next" id="Subscribe-{{ form_id }}" aria-label="{{ 'general.newsletter.submit_label' | t }}">
+              <span class="visually-hidden">{{ 'general.newsletter.submit_label' | t }}</span>
+              <span aria-hidden="true">{%- render 'theme-symbols' icon: 'arrow' -%}</span>
+            </button>
+          </fieldset>
+
+        {%- endif -%}
+
+      {%- endform -%}
+
+      {%- unless section.settings.text == blank -%}
+        <span class="newsletter__info rte remove-empty-space text-size--18">{{ section.settings.text }}</span>
+      {%- endunless -%}
+
+		</div>
+  </div>
+
+  {%- render 'color-scheme', color_scheme: section.settings.color_scheme, hide_section_bottom_border: section.settings.disable_section_bottom_border -%}
+  
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.newsletter.name",
+  "class": "element--has-section-borders mount-newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.local-extra-words.sections.headings.title",
+      "default": "Subscribe to our newsletter"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.rich-text.blocks.text.settings.text.label",
+      "default": "<p>Be the first to know about new collections and exclusive offers.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_centered",
+      "label": "t:raw-extra-words.settings_schema.labels.centered_content",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.colors.header_section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:color-schemes.name_singular",
+      "default": "scheme_1"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_section_bottom_border",
+      "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.refactor_words.seo.name"
+    },
+    {
+      "type": "select",
+      "id": "seo_h_tag",
+      "label": "t:sections.refactor_words.seo.label",
+      "info": "t:sections.refactor_words.seo.info",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "span",
+          "label": "span"
+        }
+      ],
+      "default": "h3"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.newsletter.name"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "custom.drawers", "custom.overlay"]
+  }
+}
+{% endschema %}

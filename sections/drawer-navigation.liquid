@@ -1,0 +1,292 @@
+
+<sidebar-drawer id="site-menu-sidebar" data-direction="right" class="sidebar" tabindex="-1" role="dialog" aria-modal="true"
+  style="display:none"
+>
+
+  <div class="sidebar__container">
+
+    <div class="sidebar__content">
+    
+      <div class="sidebar__header">
+        <span class="sidebar__title text-size--18 text-weight--bold text-transform--uppercase">
+          {{ 'general.accessibility_labels.menu' | t }}
+        </span>
+        <button class="sidebar__close" data-js-close>
+          <span class="visually-hidden">{{ 'general.accessibility_labels.close_sidebar' | t }}</span>
+          <span aria-hidden="true" aria-role="img">{%- render 'theme-symbols', icon: 'close-small' -%}</span>
+        </button>
+      </div>
+
+      <div class="sidebar__body">
+
+        <mobile-navigation>
+          <div class="site-nav style--sidebar">
+            <div class="site-nav-container">
+
+              {%- for block in section.blocks -%}
+                <nav>
+                  <div>
+                    {%- unless block.settings.menu_title == blank -%}
+                      <span class="menu-title  {{ block.settings.menu_title_size }} {% if block.settings.menu_title_weight %} text-weight--bold {% endif %}">
+                        {{ block.settings.menu_title | escape }}
+                      </span>
+                    {%- endunless -%}
+
+                    {%- liquid
+                      if block.settings.menu_text_size contains '--18' and block.settings.menu_text_weight == false 
+                        assign text_animation_class = ' text-animation--underline-small'
+                      endif
+                    -%}
+                    <ul class="link-list {{ block.settings.menu_text_size }} {% if block.settings.menu_text_weight %} text-weight--bold {% endif %}">
+                      {%- render 'site-nav', linklist: block.settings.main_linklist, type: 'sidebar', text_animation_class: text_animation_class -%}
+                    </ul>
+                  </div>
+                </nav>
+              {%- endfor -%}
+
+              {%- if shop.customer_accounts_enabled and section.settings.show_account -%}
+                <nav>
+                  <div>
+                    <ul class="link-list text-size--18">
+                      <li id="menu-item-account">
+                        <a class="menu-link link-arrow" href="{%- liquid
+                          if customer
+                            echo routes.account_url
+                          else
+                          echo routes.account_login_url
+                          endif
+                        -%}">
+                          <span class="link-arrow__icon">{%- render 'theme-symbols', icon: 'arrow' -%}</span>
+                          <span class="link-arrow__text">
+                            <span class="text-animation--underline">
+                              {%- liquid
+                                if customer
+                                  echo 'general.account_link.logged_in' | t
+                                else
+                                  echo 'general.account_link.logged_out' | t
+                                endif
+                              -%}
+                            </span>
+                          </span>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </nav>
+              {%- endif -%}
+
+            </div>
+          </div>
+        </mobile-navigation>
+
+      </div>
+
+      <div class="sidebar__footer"
+        style="padding-top:0"
+      >
+
+        {%- if section.settings.show_promotion_block -%}
+        
+          <div class="navigation-footer-element menu-promotion">
+    
+            {% if section.settings.promotion_image_link != blank %} <a href="{{ section.settings.promotion_image_link }}" {% else %} <div {% endif %}
+              class="menu-promotion-background-image"
+              style="padding-top: {{ 100 | divided_by: section.settings.promotion_image.aspect_ratio }}%"
+            >
+              {%- liquid
+                unless section.settings.promotion_image == blank 
+                  if section.settings.promotion_image_link != blank 
+                    assign add_hover_animation = true
+                  endif
+                  render 'lazy-image', type: 'background', image: section.settings.promotion_image, sizes: 'sizes="(max-width: 474px) 100vw, (max-width: 1023px) 360px, 400px"', hover_animation: add_hover_animation
+                endunless
+              -%}
+            {%- if section.settings.promotion_image_link != blank -%} </a> {%- else -%} </div> {%- endif -%}
+
+            {%- unless section.settings.promotion_content == empty -%}
+              <div class="menu-promotion-content gutter-top--small text-size--30 rte remove-empty-space">
+                {{ section.settings.promotion_content | escape }}
+              </div>
+            {%- endunless -%}
+
+            {%- unless section.settings.promotion_image_button_label == blank -%}
+              <div class="gutter-top--small">
+                {%- render 'button', label: section.settings.promotion_image_button_label, link: section.settings.promotion_image_button_link, target: section.settings.promotion_image_button_target, style: 'outline-arrow', class: 'button--medium' -%}
+              </div>
+            {%- endunless -%}
+
+          </div>
+
+        {%- endif -%}
+
+        {%- if section.settings.show_social -%}
+          <div class="navigation-footer-element menu-social-links">
+            {%- render 'social-icons', link_class: 'button button--medium button--outline--hover-accent', text_class: 'button__text', hide_icon: true -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_country_selector or section.settings.show_locale_selector -%}
+          <div class="navigation-footer-element">
+            {%- render 'localization-form', show_country_selector: section.settings.show_country_selector, show_locale_selector: section.settings.show_locale_selector, location: 'sidebar' -%}
+          </div>
+        {%- endif -%}
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <link rel="stylesheet" href="{{ 'component-mobile-navigation.css' | asset_url }}" media="print" onload="this.media='all'">
+
+</sidebar-drawer>
+
+{% schema %}
+{
+  "name": "t:raw-extra-words.drawers.navigation.name",
+  "class": "mount-drawer",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:raw-extra-words.drawers.navigation.info"
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.layout_labels.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "t:raw-extra-words.sections.header.settings.content.account",
+      "info": "t:raw-extra-words.sections.header.settings.content.account_info",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_country_selector",
+      "label": "t:sections.footer.settings.country_selector_show.label",
+      "info": "t:sections.footer.settings.country_selector.info",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_locale_selector",
+      "label": "t:sections.footer.settings.language_selector_show.label",
+      "info": "t:sections.footer.settings.language_selector.info",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social",
+      "label": "t:raw-extra-words.drawers.navigation.settings.show_social_links",
+      "info": "t:sections.local-extra-words.sections.announcement-bar.settings.social.info",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.sections.promotion_blocks.name"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_promotion_block",
+      "label": "t:raw-extra-words.sections.header.promotion.show",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "promotion_image",
+      "label": "t:sections.gallery.blocks.image.settings.image.label"
+    },
+    {
+      "type": "url",
+      "id": "promotion_image_link",
+      "label": "t:sections.refactor_words.header.promotion_block.image_link"
+    },
+    {
+      "type": "text",
+      "id": "promotion_content",
+      "label": "t:sections.text-columns-with-icons.blocks.icon.settings.text.label",
+      "default": "Lead customers to your best offers"
+    },
+    {
+      "type": "text",
+      "id": "promotion_image_button_label",
+      "label": "t:sections.rich-text.blocks.button.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "promotion_image_button_link",
+      "label": "t:sections.rich-text.blocks.button.settings.button_link.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "promotion_image_button_target",
+      "label": "t:sections.local-extra-words.sections.announcement-bar.blocks.content.settings.target",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "t:raw-extra-words.drawers.navigation.settings.menu",
+      "settings": [
+        {
+          "type": "link_list",
+          "id": "main_linklist",
+          "label": "t:sections.split-extra-words.sections.header.settings.menu"
+        },
+        {
+          "type": "select",
+          "id": "menu_text_size",
+          "label": "t:raw-extra-words.settings_schema.labels.text_size",
+          "options": [
+            {
+              "value": "text-size--18",
+              "label": "t:sections.local-extra-words.sections.product-card.blocks.text.settings.size.option__2"
+            },
+            {
+              "value": "text-size--30",
+              "label": "t:sections.local-extra-words.sections.product-card.blocks.text.settings.size.option__3"
+            }
+          ],
+          "default": "text-size--18"
+        },
+        {
+          "type": "checkbox",
+          "id": "menu_text_weight",
+          "label": "t:raw-extra-words.new_schema.bold_text",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "menu_title",
+          "label": "t:raw-extra-words.drawers.navigation.settings.title"
+        },
+        {
+          "type": "select",
+          "id": "menu_title_size",
+          "label": "t:raw-extra-words.drawers.navigation.settings.title_size",
+          "options": [
+            {
+              "value": "text-size--18",
+              "label": "t:sections.local-extra-words.sections.product-card.blocks.text.settings.size.option__2"
+            },
+            {
+              "value": "text-size--30",
+              "label": "t:sections.local-extra-words.sections.product-card.blocks.text.settings.size.option__3"
+            }
+          ],
+          "default": "text-size--30"
+        },
+        {
+          "type": "checkbox",
+          "id": "menu_title_weight",
+          "label": "t:raw-extra-words.drawers.navigation.settings.title_weight",
+          "default": true
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

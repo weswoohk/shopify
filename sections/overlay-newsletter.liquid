@@ -1,0 +1,174 @@
+<modal-box id="modal-newsletter"
+    data-options='{
+    "show": {% unless request.design_mode %} {{ section.settings.show_after }} {% else %} 1000 {% endunless %},
+    "frequency": "{{ section.settings.show_repeat }}",
+    "enabled": true,
+    "closeByKey": false,
+    "disableScroll": false
+  }'
+  style="display:none;"
+  data-modal-box
+  {{ block.shopify_attributes }}
+>
+
+  <div class="sidebar sidebar--newsletter">
+
+    <div class="sidebar__container"
+      {% if section.settings.hide_borders %} style="border: none !important" {% endif %}
+    >
+
+      <div class="sidebar__content">
+      
+        <div class="sidebar__header">
+          <span class="sidebar__title text-size--18 text-weight--bold text-transform--uppercase">
+            {{ 'general.newsletter.title' | t }}
+          </span>
+          <button class="sidebar__close" data-js-close>
+            <span class="visually-hidden">{{ 'general.accessibility_labels.close_sidebar' | t }}</span>
+            <span aria-hidden="true" aria-role="img">{%- render 'theme-symbols', icon: 'close-small' -%}</span>
+          </button>
+        </div>
+
+        <div class="sidebar__body">
+
+          {%- liquid
+            unless section.settings.image == blank 
+              render 'lazy-image', image: section.settings.image, ratio: 1, sizes: 'sizes="420px"', alt: "newsletter"
+            endunless
+          -%}
+
+          <div class="gutter--sidebar margin-bottom--regular">
+
+            {%- unless section.settings.title == blank -%}
+              <div class="gutter-top--small text-size--30 text-weight--bold">{{ section.settings.title | escape }}</div>
+            {%- endunless -%}
+
+            <div class="newsletter gutter-top--small">
+
+              {%- assign form_id = 'newsletter-modal' -%}
+              {%- form 'customer', id: form_id, class: '' -%}
+              
+                {%- render 'form-errors', form: form -%}
+        
+                {%- if form.posted_successfully? -%}
+                  
+                  <span class="text-size--20">{{ 'general.newsletter.confirmation' | t }}</span>
+        
+                {%- else -%}
+                  
+                  <fieldset>
+                    <input type="hidden" name="contact[tags]" value="newsletter">
+                    <input type="email" class="newsletter__input" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter.email_label' | t }}" name="contact[email]" id="Email-{{ form_id }}" aria-label="{{ 'general.newsletter.email_label' | t }}" autocorrect="off" autocapitalize="off" required>
+                    <button type="submit" class="go go--next" id="Subscribe-{{ form_id }}" aria-label="{{ 'general.newsletter.submit_label' | t }}">
+                      <span class="newsletter__button-label visually-hidden">{{ 'general.newsletter.submit_label' | t }}</span>
+                      <span aria-hidden="true">{%- render 'theme-symbols' icon: 'arrow' -%}</span>
+                    </button>
+                  </fieldset>
+        
+                {%- endif -%}
+        
+              {%- endform -%}
+
+            </div>
+
+            {%- unless section.settings.content == blank -%}
+              <div class="rte gutter-top--small">{{ section.settings.content }}</div>
+            {%- endunless -%}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</modal-box>
+
+{%- render 'color-scheme', color_scheme: section.settings.color_scheme -%}
+
+{% schema %}
+  {
+    "name": "t:raw-extra-words.settings_schema.labels.newsletter",
+    "class": "mount-popup mount-newsletter-popup",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "t:raw-extra-words.settings_schema.labels.newsletter_info"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "t:sections.popup.settings.title.label",
+        "default": "Subscribe to our newsletter"
+      },
+      {
+        "type": "richtext",
+        "id": "content",
+        "label": "t:sections.popup.settings.content.label",
+        "default": "<p>Stay up to date on the latest product releases, special offers & news by signing up for our newsletter.</p><p>Read our <a href='#'>privacy policy</a>.</p>"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "t:sections.popup.settings.image.label",
+        "info": "t:raw-extra-words.settings_schema.labels.custom_image_info"
+      },
+      {
+        "type": "header",
+        "content": "t:sections.popup.settings.functionality.content"
+      },
+      {
+        "type": "range",
+        "id": "show_after",
+        "label": "t:sections.popup.settings.show_after.label",
+        "min": 3,
+        "max": 60,
+        "step": 1,
+        "unit": "s",
+        "default": 6
+      },
+      {
+        "type": "select",
+        "id": "show_repeat",
+        "label": "t:sections.popup.settings.frequency.label",
+        "options": [
+          {
+            "value": "day",
+            "label": "t:sections.popup.settings.frequency.options__1.label"
+          },
+          {
+            "value": "week",
+            "label": "t:sections.popup.settings.frequency.options__2.label"
+          },
+          {
+            "value": "once",
+            "label": "t:sections.popup.settings.frequency.options__3.label"
+          }
+        ],
+        "default": "week"
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.colors.header_section"
+      },
+      {
+        "type": "color_scheme",
+        "id": "color_scheme",
+        "label": "t:color-schemes.name_singular",
+        "default": "scheme_1"
+      },
+      {
+        "type": "checkbox",
+        "id": "hide_borders",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.hide_borders",
+        "default": false
+      }
+    ],
+    "enabled_on": {
+      "groups": ["custom.overlay"]
+    }
+  }
+{% endschema %}

@@ -1,0 +1,359 @@
+{{ 'component-blog-item.css' | asset_url | stylesheet_tag }}
+
+{%- render 'page-heading', title: 'search.page.title', title_is_translation: true, custom_margin: 'gutter-bottom--regular' -%}
+
+<div class="search-page-form element--has-grid-borders">
+
+  {%- liquid
+    if search.performed and search.results_count > 0
+      assign button_label = 'search.page.search_again_button_label' | t 
+    else 
+      assign button_label = 'search.page.search_button_label' | t 
+    endif
+  -%}
+
+  <form action="{{ routes.search_url }}" method="get" role="search" autocomplete="off">
+    <input name="q" type="search" autocomplete="off" 
+      placeholder="{{ 'search.form.placeholder' | t }}" 
+      aria-label="{{ 'search.form.placeholder' | t }}"
+    />
+    {%- render 'button', label: button_label, style: 'solid', label_is_translation: false, is_submit: true, type: 'button' -%}
+  </form>
+  
+</div>
+
+{%- if search.performed and search.results_count == 0 and search.filters == empty -%}
+  <div class="search-page-no-results">{{ 'search.page.no_results' | t: terms: search.terms }}</div>
+{%- elsif search.performed -%}
+  {%- paginate search.results by section.settings.results_number -%}
+
+    {%- liquid
+      assign offset = paginate.current_offset | plus: 1
+      assign page_size = paginate.current_offset | plus: paginate.page_size | at_most: paginate.items
+      assign products_results = search.results | where: 'object_type', 'product'
+    -%}
+
+    <div class="search-page-filters element--has-grid-borders"
+      {% if section.settings.enable_filtering == false and section.settings.enable_sorting == true %} data-only-sort {% endif %}
+    >
+
+      <strong>{{ 'search.page.results' | t: count: search.results_count, terms: search.terms }}</strong>
+      {%- unless section.settings.enable_filtering or section.settings.enable_sorting -%}
+        <div style="margin-top:.5em">{{ 'search.page.results_count' | t: offset: offset, page_size: page_size, count: paginate.items }}</div>
+      {%- endunless -%}
+
+      {%- if section.settings.enable_filtering -%}
+        <div class="hide portable-show">
+          <div class="collection-heading__actions" style="margin-top:var(--gutter-small)">
+            <button id="collection-filters-handle" class="button button--outline button--fullwidth button--no-text-transform button--mobile-arrow" aria-controls="site-filters-sidebar" aria-expanded="false" onclick="setTimeout(()=>{document.querySelectorAll('#FacetFiltersFormMobile show-more')?.forEach(elm=>{elm.init()})},10);document.getElementById('site-filters-sidebar').show()" style="justify-content:left">
+              <span class="button__text">{{ 'collections.filter_and_sort' | t }}</span>
+              <span class="button__arrow">{% render 'theme-symbols', icon: 'plus' %}</span>
+            </button>
+          </div>
+        </div>
+      {%- endif -%}
+      
+      {%- liquid 
+        if products_results.size > 0 or search.results.size == 0 and search.filters != empty 
+          if section.settings.enable_filtering or section.settings.enable_sorting
+            render 'facets-horizontal', results: search, enable_filtering: section.settings.enable_filtering, enable_sorting: section.settings.enable_sorting, offset: offset, page_size: page_size
+          endif
+        endif
+      -%}
+      
+    </div>
+
+    <div class="element--has-section-borders"
+      {% if products_results.size == 0 and search.filters == empty %} style="display:none" {% endif %}
+    >
+      <h2 class="text-size--30 search-page-result-title element--has-grid-borders">
+        {{ 'search.form.product_results_title' | t }} ({{ products_results.size }})
+      </h2>
+      <div id="CollectionProductGrid">
+
+        {%- liquid
+          if section.settings.layout_desktop == 'four-columns'
+            assign grid_class_desktop = 'grid-4 grid-laptop-3 grid-lap-2'
+            assign sizes_class = 'grid-4'
+          else
+            assign grid_class_desktop = 'grid-3 grid-portable-2'
+            assign sizes_class = 'grid-3'
+          endif
+        -%}
+      
+        <div id="main-collection-product-grid" data-id="{{ section.id }}" class="element--overflow-hidden grid grid--layout {{ grid_class_desktop }} {{ section.settings.layout_mobile }} grid--align-items-stretch {% if settings.product_card_disable_border %} element--hide-inner-borders {% endif %}">
+
+          {%- liquid
+            if products_results.size > 0
+              for product in products_results
+                render 'product-item', product: product, index: forloop.index, layout_desktop: sizes_class, layout_mobile: section.settings.layout_mobile
+              endfor
+            endif
+          -%}
+
+          {%- if search.results.size == 0 and search.filters != empty -%}
+            {%- liquid
+              assign sort_by = search.sort_by | default: search.default_sort_by
+              assign terms = search.terms | escape
+              assign search_url = '?q=' | append: terms | append: '&options%5Bprefix%5D=last&sort_by=' | append: sort_by
+            -%}
+            <p class="no-content-message rte">
+              {{ 'collections.empty' | t }}<br/>
+              {{ 'collections.use_fewer_filters_html' | t: link: search_url, class: 'button--text' }}
+            </p>
+          {%- endif -%}
+
+        </div>
+
+      </div>
+    </div>
+
+    {%- assign article_search_results_found = 0 -%}
+    {%- if search.types contains 'article' -%}
+
+      {%- capture article_search_results -%}
+        {%-  liquid 
+          for result in search.results
+
+            if result.object_type == 'product' or result.object_type == 'page'
+              continue
+            endif
+            assign article_search_results_found = article_search_results_found | plus: 1
+
+            render 'blog-item', article: result, show_image: section.settings.blog_show_image, layout: section.settings.layout, show_author: section.settings.show_author, show_comments: section.settings.show_comments, show_tags: section.settings.show_tags, show_date: section.settings.show_date
+          
+          endfor
+        -%}
+      {%- endcapture -%}
+
+      {%- if article_search_results != blank -%}
+
+        <div class="element--has-section-borders">
+          <h2 class="text-size--30 search-page-result-title element--has-grid-borders">
+            {{ 'search.form.article_results_title' | t }} ({{ article_search_results_found }})
+          </h2>
+          <div class="grid grid-2 grid-lap-1 grid--layout main-blog grid--align-items-stretch
+            element--overflow-hidden
+          " id="blog-posts-{{ section.id }}">
+            {%- render 'media-shape', shape: section.settings.media_shape, id: section.id, element: 'blog-posts' -%}
+            {{ article_search_results }}
+          </div>
+        </div>
+
+      {%- endif -%}
+
+    {%- endif -%}
+
+    {%- if search.types contains 'page' -%}
+
+      {%- assign page_search_results_found = 0 -%}
+      {%- capture page_search_results -%}
+        {%- liquid
+          for result in search.results
+
+            if result.object_type == 'product' or result.object_type == 'article'
+              continue
+            endif
+            assign page_search_results_found = page_search_results_found | plus: 1
+
+            render 'blog-item', article: result, show_image: false, show_author: false, show_comments: false, show_tags: false, show_date: false
+
+          endfor
+        -%}
+      {%- endcapture -%}
+
+      {%- if page_search_results != blank -%}
+            
+        <div class="element--has-section-borders">
+          <h2 class="text-size--30 search-page-result-title element--has-grid-borders">
+            {{ 'search.form.page_results_title' | t }} ({{ page_search_results_found }})
+          </h2>
+          <div class="grid grid-1 element--overflow-hidden">
+            {{ page_search_results }}
+          </div>
+        </div>
+
+      {%- endif -%}
+
+    {%- endif -%}
+
+    {%- if paginate.pages > 1 -%}
+      <div style="margin-top:var(--border-width-sections)">
+        {%- render 'pagination', paginate: paginate -%}
+      </div>
+    {%- endif -%}
+
+  {%- endpaginate -%}
+
+{%- else -%}
+  <div style="height:15rem"></div>
+{%- endif -%}
+
+{%- render 'color-scheme', color_scheme: blank, hide_section_bottom_border: false, prlx: true -%}
+
+{%- if section.settings.enable_filtering -%}
+  <sidebar-drawer id="site-filters-sidebar" data-direction="right" class="sidebar" tabindex="-1" role="dialog" aria-modal="true" style="display:none">
+    
+    <div class="sidebar__container">
+
+      <div class="sidebar__content">
+
+        <div class="sidebar__header">
+          <span class="sidebar__title text-size--18 text-weight--bold text-transform--uppercase">
+            {{ 'collections.filter_and_sort' | t }}
+          </span>
+          <button class="sidebar__close" data-js-close>
+            <span class="visually-hidden">{{ 'general.accessibility_labels.close_sidebar' | t }}</span>
+            <span aria-hidden="true" aria-role="img">{%- render 'theme-symbols', icon: 'close-small' -%}</span>
+          </button>
+        </div>
+
+        <div class="sidebar__body">
+          {%- render 'facets-vertical', results: search, enable_filtering: section.settings.enable_filtering, enable_sorting: section.settings.enable_sorting, offset: offset, page_size: page_size, location: 'mobile' -%}
+        </div>
+
+      </div>
+    
+    </div>
+  </sidebar-drawer>
+  <script src="{{ 'component-facets.js' | asset_url }}" defer></script>
+  <script>
+    window.addEventListener('load', ()=>{
+      document.body.append(document.getElementById('site-filters-sidebar'));
+    });
+  </script>
+{%- elsif section.settings.enable_sorting == true and section.settings.enable_filtering == false -%}
+  <script src="{{ 'component-facets.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.main-search.name",
+  "class": "element--has-section-borders mount-filters search-page no-inert",
+  "settings": [
+    {
+      "type": "range",
+      "id": "results_number",
+      "label": "t:sections.main-search.settings.products_per_page.label",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main-collection-product-grid.settings.header__1.content"
+    },
+    {
+      "id": "enable_filtering",
+      "type": "checkbox",
+      "label": "t:sections.main-collection-product-grid.settings.enable_filtering.label",
+      "default": false
+    },
+    {
+      "id": "enable_sorting",
+      "type": "checkbox",
+      "label": "t:sections.main-collection-product-grid.settings.enable_sorting.label",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.local-extra-words.sections.main-search.settings.products.name",
+      "info": "t:sections.local-extra-words.sections.main-search.settings.products.info"
+    },
+    {
+      "type": "select",
+      "id": "layout_desktop",
+      "label": "t:sections.local-extra-words.sections.columns.name",
+      "info": "t:sections.local-extra-words.sections.columns.info",
+      "options": [
+        {
+          "value": "three-columns",
+          "label": "t:sections.local-extra-words.sections.columns.option__2"
+        },
+        {
+          "value": "four-columns",
+          "label": "t:sections.local-extra-words.sections.columns.option__3"
+        }
+      ],
+      "default": "four-columns"
+    },
+    {
+      "type": "select",
+      "id": "layout_mobile",
+      "label": "t:raw-extra-words.settings_schema.layout_labels.mobile_layout",
+      "options": [
+        {
+          "value": "grid-palm-1",
+          "label": "t:sections.local-extra-words.sections.columns.option__0"
+        },
+        {
+          "value": "grid-palm-2",
+          "label": "t:sections.local-extra-words.sections.columns.option__1"
+        }
+      ],
+      "default": "grid-palm-2"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.local-extra-words.sections.main-search.settings.blogs.name"
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_image",
+      "label": "t:sections.blog-posts.settings.show_image.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "media_shape",
+      "label": "t:raw-extra-words.settings_schema.labels.media_shape",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:raw-extra-words.settings_schema.labels.media_shape_options.option_0"
+        },
+        {
+          "value": "9999px 9999px var(--brg) var(--brg)",
+          "label": "t:raw-extra-words.settings_schema.labels.media_shape_options.option_1"
+        },
+        {
+          "value": "var(--brg) 9999px 9999px var(--brg)",
+          "label": "t:raw-extra-words.settings_schema.labels.media_shape_options.option_2"
+        },
+        {
+          "value": "var(--brg) var(--brg) 9999px 9999px",
+          "label": "t:raw-extra-words.settings_schema.labels.media_shape_options.option_3"
+        },
+        {
+          "value": "9999px var(--brg) var(--brg) 9999px",
+          "label": "t:raw-extra-words.settings_schema.labels.media_shape_options.option_4"
+        },
+        {
+          "value": "9999px 9999px 9999px 9999px",
+          "label": "t:raw-extra-words.settings_schema.labels.media_shape_options.option_5"
+        }
+      ],
+      "default": "9999px 9999px 9999px 9999px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "t:raw-extra-words.settings_schema.labels.show_date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_comments",
+      "label": "t:raw-extra-words.settings_schema.labels.show_comments",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "t:raw-extra-words.settings_schema.labels.show_author",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

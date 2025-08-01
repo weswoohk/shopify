@@ -1,0 +1,241 @@
+{%- if section.blocks.size > 0 -%}
+
+  <div class="stacked-popovers">
+    <style type="text/css">
+      .popover {
+        border-radius: {{ section.settings.popup_border_radius }}px !important;
+        {% if section.settings.popup_box_shadow == false %}
+          box-shadow: none !important;
+        {% endif %}
+
+        {% if section.settings.popup_box_border == true %}
+          border: 1px var(--border-style-grid) var(--color-scheme-text);
+        {% endif %}
+      }
+    </style>
+    
+    <div class="stacked-popovers__inner">
+    
+      {%- for block in section.blocks -%}
+        
+        {%- liquid
+            
+          assign show = false
+
+          if block.type == 'cookies'
+            assign show = true
+          elsif block.settings.visibility == 'all'
+            assign show = true
+          elsif block.settings.visibility == 'homepage' and template == 'index'
+            assign show = true
+          elsif block.settings.visibility == 'no-homepage' and template != 'index'
+            assign show = true
+          elsif block.settings.visibility == 'product' and template.name == 'product'
+            assign show = true
+          elsif block.settings.visibility == 'cart' and template.name == 'cart'
+            assign show = true
+          endif
+
+        -%}
+
+        {%- if show -%}
+
+          {%- liquid
+
+            if block.type == 'cookies'
+              assign freq = 'month'
+              assign show_after = 1
+            else  
+              assign freq = block.settings.show_repeat
+              assign show_after = block.settings.show_after
+            endif
+          -%}
+        
+          <modal-box id="modal-{{ block.id }}" class="popover popover--{{ block.type }}" 
+            data-options='{
+              "show": {% unless request.design_mode %} {{ show_after }} {% else %} 1000 {% endunless %},
+              "frequency": "{{ freq }}",
+              "enabled": true,
+              {% if block.type == 'cookies' and request.design_mode == false %} "type": "cookies", {% endif %}
+              "closeByKey": false,
+              "disableScroll": false
+            }'
+            data-modal-box
+            {{ block.shopify_attributes }}
+            style="display:none"
+          >
+
+            <div class="popover__content">
+              {%- case block.type -%}
+
+                {%- when 'cookies' -%}
+                  <div class="popover__inner">
+                    <span class="popover__text text-size--16">{{ 'general.cookies_popup.content' | t }}</span>
+                    <div class="popover__buttons">
+                      {%- render 'button', style: 'solid', label: 'general.cookies_popup.accept_button_label', class: 'button--small', label_is_translation: true, type: 'button', attribute: 'data-js-close data-js-cookies-accept' -%}
+                      {%- render 'button', style: 'outline', label: 'general.cookies_popup.decline_button_label', class: 'button--small', label_is_translation: true, type: 'button', attribute: 'data-js-close data-js-cookies-decline' -%}
+                    </div>
+                  </div>
+
+                {%- when 'text' -%}
+                  <span class="popover__text text-size--16 rte">{{ block.settings.content }}</span>
+                  <button class="popover__close" data-js-close>
+                    <span class="visually-hidden">{{ 'general.accessibility_labels.close_popup' | t }}</span>
+                    <span aria-hidden="true" aria-role="img">{%- render 'theme-symbols', icon: 'close-small' -%}</span>
+                  </button>
+
+              {%- endcase %}
+
+            </div>
+
+          </modal-box>
+
+          {%- liquid
+            assign card_id = '#modal-' | append: block.id
+            render 'color-scheme', color_scheme: block.settings.color_scheme, class: card_id, force_color_scheme: true
+          -%}
+
+        {%- endif -%}
+
+      {%- endfor -%}
+    </div>
+  </div>
+
+{%- endif -%}
+
+{% schema %}
+  {
+    "name": "t:raw-extra-words.settings_schema.labels.popovers",
+    "class": "mount-popover",
+    "blocks": [
+      {
+        "type": "cookies",
+        "name": "t:raw-extra-words.settings_schema.labels.cookies",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "t:raw-extra-words.settings_schema.labels.cookies_info"
+          },
+          {
+            "type": "color_scheme",
+            "id": "color_scheme",
+            "label": "t:color-schemes.name_singular",
+            "default": "scheme_1"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "t:raw-extra-words.settings_schema.labels.text",
+        "settings": [
+          {
+            "type": "select",
+            "id": "visibility",
+            "label": "t:sections.refactor_words.announcement-bar.visibility.label",
+            "options": [
+              {
+                "value": "all",
+                "label": "t:sections.refactor_words.announcement-bar.visibility.option_1"
+              },
+              {
+                "value": "homepage",
+                "label": "t:sections.refactor_words.announcement-bar.visibility.option_2"
+              },
+              {
+                "value": "product",
+                "label": "t:sections.refactor_words.announcement-bar.visibility.option_4"
+              },
+              {
+                "value": "cart",
+                "label": "t:sections.refactor_words.announcement-bar.visibility.option_5"
+              },
+              {
+                "value": "no-homepage",
+                "label": "t:sections.refactor_words.announcement-bar.visibility.option_3"
+              }
+            ],
+            "default": "all"
+          },
+          {
+            "type": "header",
+            "content": "t:sections.local-extra-words.sections.faq.headings.content"
+          },
+          {
+            "type": "inline_richtext",
+            "id": "content",
+            "label": "t:raw-extra-words.settings_schema.labels.content",
+            "default": "Introduce various discounts or make new product announcements."
+          },
+          {
+            "type": "range",
+            "id": "show_after",
+            "label": "t:sections.popup.settings.show_after.label",
+            "min": 1,
+            "max": 30,
+            "step": 1,
+            "unit": "s",
+            "default": 5
+          },
+          {
+            "type": "select",
+            "id": "show_repeat",
+            "label": "t:sections.popup.settings.frequency.label",
+            "options": [
+              {
+                "value": "day",
+                "label": "t:sections.popup.settings.frequency.options__1.label"
+              },
+              {
+                "value": "week",
+                "label": "t:sections.popup.settings.frequency.options__2.label"
+              },
+              {
+                "value": "once",
+                "label": "t:sections.popup.settings.frequency.options__3.label"
+              }
+            ],
+            "default": "week"
+          },
+          {
+            "type": "header",
+            "content": "t:raw-extra-words.settings_schema.colors.header_block"
+          },
+          {
+            "type": "color_scheme",
+            "id": "color_scheme",
+            "label": "t:color-schemes.name_singular",
+            "default": "scheme_1"
+          }
+        ]
+      }
+    ],
+    "settings": [
+			{
+				"type": "range",
+				"id": "popup_border_radius",
+				"label": "t:sections.local-extra-words.settings_schema.borders.settings.radius",
+				"min": 0,
+				"max": 30,
+				"step": 1,
+				"unit": "px",
+				"default": 10
+			},
+      {
+        "type": "checkbox",
+        "id": "popup_box_border",
+        "label": "t:raw-extra-words.settings_schema.borders.show",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "popup_box_shadow",
+        "label": "t:sections.refactor_words.colors.shadow",
+        "default": false
+      }
+    ],
+    "enabled_on": {
+      "groups": ["custom.overlay"]
+    }
+  }
+{% endschema %}

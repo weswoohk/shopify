@@ -1,0 +1,74 @@
+<div class="age-verification" style="display:none">
+
+  <div class="age-verification__container gutter--regular">
+
+    <div class="age-verification__modal spacing--custom remove-empty-space"
+      style="--spacing:16px;"
+    >
+      <div><span class="text-font--heading text-size--30">{{ section.settings.heading | escape }}</span></div>
+      <div class="rte">{{ section.settings.content }}</div>
+      <div class="increased-spacing"><button data-js-close-age-verification class="button button--outline--hover-accent button--regular button--fullwidth"><span class="button__text">{{ section.settings.button_label | escape }}</span></button></div>
+    </div>
+
+    {%- unless section.settings.image == blank -%}
+      <div class="age-verification__background">
+        {%- render 'lazy-image', image: section.settings.image, type: 'background', sizes: 'sizes="100vw"' -%}
+      </div>
+    {%- endunless -%}
+
+  </div>
+
+</div>
+
+<script>
+  if ( localStorage.getItem('age-verification') !== 'true' && ! Shopify.designMode ) {
+    document.querySelector('.age-verification').style.display = 'block';
+    document.body.classList.add('element--overflow-hidden');
+    document.querySelector('[data-js-close-age-verification]').addEventListener('click', ()=>{
+      document.body.classList.remove('element--overflow-hidden');
+      document.querySelector('.age-verification').style.display = 'none';
+      localStorage.setItem('age-verification', 'true');
+    });
+  }
+</script>
+
+{% schema %}
+  {
+    "name": "t:sections.local-extra-words.sections.age-verification.name",
+    "class": "mount-age-verification",
+    "limit": 1,
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "t:sections.local-extra-words.sections.headings.heading",
+        "default": "Age verification"
+      },
+      {
+        "type": "richtext",
+        "id": "content",
+        "label": "t:sections.rich-text.blocks.text.settings.text.label",
+        "default": "<p>By clicking \"Enter\", I hereby certify that I am over the age of 18 and eligible to access the content within this site. </p>"
+      },
+      {
+        "type": "text",
+        "id": "button_label",
+        "label": "t:sections.rich-text.blocks.button.settings.button_label.label",
+        "default": "Enter"
+      },
+      {
+        "id": "image",
+        "type": "image_picker",
+        "label": "t:sections.local-extra-words.sections.video.settings.image.label"
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:sections.local-extra-words.sections.age-verification.name"
+      }
+    ],
+    "enabled_on": {
+      "groups": ["custom.overlay"]
+    }
+  }
+{% endschema %}

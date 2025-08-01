@@ -1,0 +1,210 @@
+{%- liquid
+
+  if section.settings.visibility == 'all'
+    assign show_on_homepage = true
+    assign show_on_pages = true
+  elsif section.settings.visibility == 'homepage'
+    assign show_on_homepage = true
+  elsif section.settings.visibility == 'no-homepage'
+    assign show_on_homepage = false
+    assign show_on_pages = true
+  elsif section.settings.visibility == 'product'
+    assign show_on_product = true
+  endif
+
+  if show_on_product == true and template.name == 'product'
+    assign show = true
+  endif
+  if show_on_homepage == true and template == 'index'
+    assign show = true
+  endif
+  if show_on_pages == true and template != 'index'
+    assign show = true
+  endif
+
+-%}
+
+{%- if show -%}
+
+  <div data-js-inert>
+
+    <style type="text/css">
+      #element-{{ section.id }} {
+        --animation-speed: {{ section.settings.speed }}s;
+      }
+    </style>
+
+    <script src="{{ 'component-scrolling-text.js' | asset_url }}" defer></script>
+
+    <scrolling-text id="element-{{ section.id }}" class="scrolling-text scrolling-text--header {{ section.settings.text_size }} text-font--body" data-scrolling-speed="{{ section.settings.speed }}" data-scrolling-direction="{{ section.settings.scroll_direction }}" data-pause-on-hover="{{ section.settings.pause_on_hover }}" dir="{{ section.settings.scroll_direction }}">
+      <div>
+        {%- liquid
+          for block in section.blocks
+            echo '<span class="element--horizontal-space--' | append: section.settings.horizontal_space | append: '">' | append: block.settings.marquee_text | append: '</span>'
+          endfor
+        -%}
+      </div>
+    </scrolling-text>
+
+  </div>
+
+  {%- render 'color-scheme', color_scheme: section.settings.color_scheme, is_header_group: true, hide_section_bottom_border: section.settings.disable_section_bottom_border -%}
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.local-extra-words.sections.marquee.name",
+  "class": "element--has-section-borders-alternate mount-scrolling-text",
+  "settings": [
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "t:sections.refactor_words.announcement-bar.visibility.label",
+      "options": [
+        {
+          "value": "all",
+          "label": "t:sections.refactor_words.announcement-bar.visibility.option_1"
+        },
+        {
+          "value": "homepage",
+          "label": "t:sections.refactor_words.announcement-bar.visibility.option_2"
+        },
+        {
+          "value": "product",
+          "label": "t:sections.refactor_words.announcement-bar.visibility.option_4"
+        },
+        {
+          "value": "no-homepage",
+          "label": "t:sections.refactor_words.announcement-bar.visibility.option_3"
+        }
+      ],
+      "default": "all"
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.sections.main-product-page.settings.functionality.header"
+    },
+    {
+      "id": "scroll_direction",
+      "type": "select",
+      "options": [
+        {
+          "value": "rtl",
+          "label": "t:sections.rich-text.settings.text_alignment.options__3.label"
+        },
+        {
+          "value": "ltr",
+          "label": "t:sections.rich-text.settings.text_alignment.options__1.label"
+        }
+      ],
+      "default": "ltr",
+      "label": "t:sections.local-extra-words.sections.marquee.settings.scroll_direction"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "t:sections.local-extra-words.sections.marquee.settings.scroll_speed",
+      "min": 20,
+      "max": 300,
+      "step": 10,
+      "default": 100
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "t:sections.local-extra-words.sections.marquee.settings.pause_on_mouseover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:settings_schema.typography.name"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "t:sections.footer.blocks.text.settings.text_size.label",
+      "options": [
+        {
+          "value": "text-size--14",
+          "label": "t:raw-extra-words.settings_schema.options.extra_small"
+        },
+        {
+          "value": "text-size--16",
+          "label": "t:raw-extra-words.settings_schema.options.small"
+        },
+        {
+          "value": "text-size--18",
+          "label": "t:raw-extra-words.settings_schema.options.regular"
+        },
+        {
+          "value": "text-size--20",
+          "label": "t:raw-extra-words.settings_schema.options.large"
+        }
+      ],
+      "default": "text-size--16"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_space",
+      "label": "t:sections.local-extra-words.settings_schema.layout.grid.horizontal_space",
+      "options": [
+        {
+          "value": "small-x-2",
+          "label": "t:sections.local-extra-words.sections.media-with-text-overlay.settings.option__5"
+        },
+        {
+          "value": "regular-x-2",
+          "label": "t:sections.local-extra-words.sections.media-with-text-overlay.settings.option__2"
+        },
+        {
+          "value": "large-x-2",
+          "label": "t:sections.local-extra-words.sections.media-with-text-overlay.settings.option__3"
+        }
+      ],
+      "default": "small-x-2"
+    },
+    {
+      "type": "header",
+      "content": "t:raw-extra-words.settings_schema.colors.header_section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:color-schemes.name_singular",
+      "default": "scheme_1"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_section_bottom_border",
+      "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "t:sections.words_210.text_columns.block.name",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "marquee_text",
+          "label": "t:sections.footer.blocks.text.settings.content.label",
+          "default": "Introduce product <strong>promotions</strong>. Write about your brand. Flash deals!"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.local-extra-words.sections.marquee.name",
+      "blocks": [
+        { "type": "text" }
+      ]
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

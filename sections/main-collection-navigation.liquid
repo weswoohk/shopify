@@ -1,0 +1,240 @@
+{%- liquid
+
+  assign captured_collection_next = false
+  assign captured_collection_prev = false
+  assign next_collection = ''
+  assign prev_collection = ''
+
+  for collection_nav in collections
+    unless collection_nav.handle == 'frontpage'
+      if captured_collection_next and next_collection == '' 
+        assign next_collection = collection_nav
+      elsif collection_nav.handle == collection.handle 
+        if forloop.last == true
+          for collection_nav_second in collections
+            unless collection_nav_second.handle == 'frontpage'
+              if next_collection == ''
+                assign next_collection = collection_nav_second
+              endif
+            endunless
+          endfor
+        else
+          assign captured_collection_next = true
+        endif
+      endif
+    endunless
+
+  endfor
+
+  assign reversed_collections = collections | reverse
+  for collection_nav in reversed_collections
+    unless collection_nav.handle == 'frontpage'
+      if captured_collection_prev and prev_collection == '' 
+        assign prev_collection = collection_nav
+      elsif collection_nav.handle == collection.handle 
+        if forloop.last == true
+          for collection_nav_second in reversed_collections
+            unless collection_nav_second.handle == 'frontpage'
+              if prev_collection == ''
+                assign prev_collection = collection_nav_second
+              endif
+            endunless
+          endfor
+        else
+          assign captured_collection_prev = true
+        endif
+      endif
+    endunless
+  endfor
+
+-%}
+{%- if prev_collection != blank or next_collection != blank -%}
+
+  {%- render 'media-shape', shape: section.settings.media_shape, id: section.id -%}
+  {%- render 'section-heading', heading: section.settings.heading, seo_h_tag: section.settings.seo_h_tag, hide_border: section.settings.disable_section_title_border -%}
+
+  <div id="element-{{ section.id }}" class="grid grid--layout grid-2 grid-lap-1">
+
+  {%- if prev_collection -%}
+
+    <sticky-image-block class="card card--hover collection-nav-item sticky-image-block">
+      
+      <div class="card__hover"></div>
+      
+      <a href="{{ prev_collection.url }}" title="{{ prev_collection.title | escape }}" class="collection-nav-item__title">
+       <span class="text-animation--underline text-animation--underline-huge text-size--100 text-transform--uppercase text-line-height--small">{{ prev_collection.title | escape }}</span>
+      </a>  
+
+      {%- if section.settings.navigation_images and prev_collection.featured_image != blank -%}
+        <div class="card__image is-sticky">
+         {%- render 'lazy-image', image: prev_collection.featured_image, alt: prev_collection.title, type: 'background', sizes: 'sizes="260px"', ratio: 1 -%}
+        </div>
+      {%- endif -%}
+
+    </sticky-image-block>
+
+  {%- endif -%}
+
+  {%- if next_collection -%}
+
+    <sticky-image-block class="card card--hover collection-nav-item sticky-image-block">
+      
+      <div class="card__hover"></div>
+
+      <a href="{{ next_collection.url }}" title="{{ next_collection.title | escape }}" class="collection-nav-item__title">
+        <span class="text-animation--underline text-animation--underline-huge text-size--100 text-transform--uppercase text-line-height--small">{{ next_collection.title | escape }}</span>
+      </a>  
+
+      {%- if section.settings.navigation_images and next_collection.featured_image != blank -%}
+        <div class="card__image is-sticky">
+          {%- render 'lazy-image', image: next_collection.featured_image, alt: next_collection.title, type: 'background', sizes: 'sizes="260px"', ratio: 1 -%}
+        </div>
+      {%- endif -%}
+
+    </sticky-image-block>
+
+  {%- endif -%}
+
+  </div>
+
+{%- endif -%}
+
+{%- render 'section-footer', cta_label: section.settings.cta_label, cta_label_is_translation: false, cta_url: section.settings.cta_url, cta_target: section.settings.cta_target, nav: false, nav_desktop: false, nav_mobile: false -%}
+
+{%- render 'color-scheme', color_scheme: section.settings.color_scheme, hide_section_bottom_border: section.settings.disable_section_bottom_border -%}
+
+{% schema %}
+  {
+    "name": "t:raw-extra-words.settings_schema.labels.collection_navigation",
+    "class": "element--has-section-borders mount-collection-navigation",
+    "limit": 1,
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.layout_labels.section_heading.label"
+      },
+      {
+        "type": "textarea",
+        "id": "heading",
+        "label": "t:sections.local-extra-words.sections.headings.heading",
+        "default": "Other collections"
+      },
+      {
+        "type": "select",
+        "id": "seo_h_tag",
+        "label": "t:sections.refactor_words.seo.label",
+        "info": "t:sections.refactor_words.seo.info",
+        "options": [
+          {
+            "value": "h1",
+            "label": "H1"
+          },
+          {
+            "value": "h2",
+            "label": "H2"
+          },
+          {
+            "value": "h3",
+            "label": "H3"
+          },
+          {
+            "value": "h4",
+            "label": "H4"
+          },
+          {
+            "value": "span",
+            "label": "span"
+          }
+        ],
+        "default": "h2"
+      },
+      {
+        "type": "checkbox",
+        "id": "disable_section_title_border",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_title_border",
+        "default": false
+      },
+      {
+        "id": "navigation_images",
+        "type": "checkbox",
+        "label": "t:raw-extra-words.settings_schema.labels.show_collection_image",
+        "info": "t:raw-extra-words.settings_schema.labels.show_collection_image_info",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "media_shape",
+        "label": "t:raw-extra-words.settings_schema.labels.media_shape",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:raw-extra-words.settings_schema.labels.media_shape_options.option_0"
+          },
+          {
+            "value": "9999px 9999px var(--brg) var(--brg)",
+            "label": "t:raw-extra-words.settings_schema.labels.media_shape_options.option_1"
+          },
+          {
+            "value": "var(--brg) 9999px 9999px var(--brg)",
+            "label": "t:raw-extra-words.settings_schema.labels.media_shape_options.option_2"
+          },
+          {
+            "value": "var(--brg) var(--brg) 9999px 9999px",
+            "label": "t:raw-extra-words.settings_schema.labels.media_shape_options.option_3"
+          },
+          {
+            "value": "9999px var(--brg) var(--brg) 9999px",
+            "label": "t:raw-extra-words.settings_schema.labels.media_shape_options.option_4"
+          },
+          {
+            "value": "9999px 9999px 9999px 9999px",
+            "label": "t:raw-extra-words.settings_schema.labels.media_shape_options.option_5"
+          }
+        ],
+        "default": "9999px 9999px 9999px 9999px"
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.labels.section_footer"
+      },
+      {
+        "type": "text",
+        "id": "cta_label",
+        "label": "t:raw-extra-words.settings_schema.labels.button_text"
+      },
+      {
+        "type": "url",
+        "id": "cta_url",
+        "label": "t:raw-extra-words.settings_schema.labels.button_url"
+      },
+      {
+        "type": "checkbox",
+        "id": "cta_target",
+        "label": "t:footer-menu-items.open_links_in_new_window",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "t:raw-extra-words.settings_schema.colors.header_section"
+      },
+      {
+        "type": "color_scheme",
+        "id": "color_scheme",
+        "label": "t:color-schemes.name_singular",
+        "default": "scheme_1"
+      },
+      {
+        "type": "checkbox",
+        "id": "disable_section_bottom_border",
+        "label": "t:raw-extra-words.settings_schema.borders.remove.hide_section_bottom_border",
+        "default": false
+      }
+    ],
+    "presets": [{
+      "name": "t:raw-extra-words.settings_schema.labels.collection_navigation"
+    }],
+    "enabled_on": {
+      "templates": ["collection"]
+    }
+  }
+{% endschema %}
