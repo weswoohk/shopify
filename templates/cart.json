@@ -1,0 +1,1 @@
+{"sections":{"main":{"type":"main-cart","blocks":{"cart-items":{"type":"cart-items","settings":{}},"shipping-calculator":{"type":"shipping-calculator","settings":{}}},"block_order":["cart-items","shipping-calculator"],"settings":{}},"cart-recommendations":{"type":"main-cart-recommendations","settings":{"heading":"Recommended"}}},"order":["main","cart-recommendations"]}
