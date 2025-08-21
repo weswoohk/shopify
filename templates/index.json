@@ -255,7 +255,7 @@
         "show_products_number": true,
         "media_shape": "none",
         "title_font": "text-font--body",
-        "title_size": "text-size--100",
+        "title_size": "text-size--40",
         "title_mobile_size": "1",
         "text_transform_uppercase": true,
         "cta_label": "All Collections",
