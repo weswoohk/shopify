@@ -272,6 +272,7 @@
         "template--19124677738814__10c33a15-b8f2-45c7-b9e6-6d07f5c3c402-1684914436684102de-0": {
           "type": "card",
           "settings": {
+            "image": "shopify://shop_images/pexels-anastasia-shuraeva-6014735.jpg",
             "image_overlay": "#000000",
             "image_overlay_opacity": 20,
             "media_shape": "none",
@@ -289,6 +290,7 @@
         "template--19124677738814__10c33a15-b8f2-45c7-b9e6-6d07f5c3c402-1684914436684102de-1": {
           "type": "card",
           "settings": {
+            "image": "shopify://shop_images/pexels-gabby-k-20419115.jpg",
             "image_overlay": "#000000",
             "image_overlay_opacity": 18,
             "media_shape": "none",
@@ -306,6 +308,7 @@
         "6ad5f45c-beb9-4ec4-a8c2-966e9e70b117": {
           "type": "card",
           "settings": {
+            "image": "shopify://shop_images/pexels-diva-33184183.jpg",
             "image_overlay": "#000000",
             "image_overlay_opacity": 30,
             "media_shape": "none",
