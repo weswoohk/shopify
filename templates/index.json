@@ -367,7 +367,7 @@
             "text": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>",
             "text_font": "text-font--headings",
             "text_size": "text-size--80",
-            "mobile_text_size": "1",
+            "mobile_text_size": "var(--mobile-text-size-small)",
             "text_line_height": "text-line-height--default",
             "seo_h_tag": "span"
           }
@@ -448,7 +448,7 @@
             "text": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>",
             "text_font": "text-font--headings",
             "text_size": "text-size--60",
-            "mobile_text_size": "1",
+            "mobile_text_size": "var(--mobile-text-size-small)",
             "text_line_height": "text-line-height--default",
             "seo_h_tag": "span"
           }
