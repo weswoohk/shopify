@@ -217,31 +217,25 @@
         "a718ebea-7ecf-47e5-9bf8-b33719ad4116": {
           "type": "collection",
           "settings": {
-            "collection": ""
+            "collection": "moduira-raw-ore"
           }
         },
         "2940e500-51f2-45a2-bd98-de358222c0b1": {
           "type": "collection",
           "settings": {
-            "collection": ""
+            "collection": "mysterious-tarot"
           }
         },
         "db63911b-0710-465d-b112-24549f8c6609": {
           "type": "collection",
           "settings": {
-            "collection": ""
+            "collection": "pyramid-crystal"
           }
         },
         "8d925b16-c6a6-41e5-bc4a-e8a6f14afbb4": {
           "type": "collection",
           "settings": {
-            "collection": ""
-          }
-        },
-        "0fffa130-6b2f-44cc-9c4b-e7a7749258e0": {
-          "type": "collection",
-          "settings": {
-            "collection": ""
+            "collection": "crystal-ball"
           }
         }
       },
@@ -250,8 +244,7 @@
         "a718ebea-7ecf-47e5-9bf8-b33719ad4116",
         "2940e500-51f2-45a2-bd98-de358222c0b1",
         "db63911b-0710-465d-b112-24549f8c6609",
-        "8d925b16-c6a6-41e5-bc4a-e8a6f14afbb4",
-        "0fffa130-6b2f-44cc-9c4b-e7a7749258e0"
+        "8d925b16-c6a6-41e5-bc4a-e8a6f14afbb4"
       ],
       "settings": {
         "heading": "COLLECTIONS",
