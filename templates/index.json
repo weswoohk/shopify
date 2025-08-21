@@ -502,7 +502,13 @@
         "heading": "SHOP THE LOOK",
         "seo_h_tag": "h2",
         "disable_section_title_border": false,
-        "product_list": [],
+        "product_list": [
+          "natural-blue-line-stone-raw-crystal-ornament-mineral-specimen-aromatherapy-diffuser-stone-raw-material-demagnetizing-stone-crushed-stone",
+          "natural-orange-calcite-raw-crystal-ornament-specimen-aromatherapy-diffuser-stone-raw-material-demagnetizing-stone",
+          "natural-green-crystal-raw-stone-aromatherapy-diffuser-stone-crystal-raw-stone-home-office-decorative-ornament-wholesale",
+          "natural-pyrite-raw-ore-crystal-ornament-mineral-specimen-aromatherapy-diffuser-stone-raw-material-demagnetizing-stone-crushed-stone"
+        ],
+        "image": "shopify://shop_images/pexels-mikhail-nilov-6944351.jpg",
         "image_overlay": "rgba(0,0,0,0)",
         "media_shape": "none",
         "hero_image_text": "Write about your brand. Flash deals!",
@@ -510,7 +516,7 @@
         "text_font": "text-font--body",
         "text_size": "60",
         "mobile_text_size": "1",
-        "text_color": "#000000",
+        "text_color": "#ffffff",
         "cta_label": "SHOP ALL",
         "cta_url": "",
         "color_scheme": "scheme4",
