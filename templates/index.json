@@ -193,7 +193,7 @@
         "heading": "FEATURED PRODUCTS",
         "seo_h_tag": "h2",
         "disable_section_title_border": false,
-        "collection": "",
+        "collection": "frontpage",
         "products_number": 12,
         "style": "grid",
         "layout_desktop": "grid-4 grid-laptop-3 grid-lap-2",
